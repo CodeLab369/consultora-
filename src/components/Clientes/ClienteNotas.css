@@ -1,0 +1,157 @@
+.cliente-notas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.notas-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-nueva-nota {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-nueva-nota:hover {
+  transform: translateY(-2px);
+}
+
+.nota-form {
+  background: #f9fafb;
+  padding: 1.25rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nota-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.nota-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.nota-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancelar,
+.btn-guardar {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancelar {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-cancelar:hover {
+  background: #f3f4f6;
+}
+
+.btn-guardar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-guardar:hover {
+  opacity: 0.9;
+}
+
+.notas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.notas-vacio {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
+.nota-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.nota-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nota-contenido {
+  color: #111827;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  white-space: pre-wrap;
+}
+
+.nota-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.nota-fecha {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.nota-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nota-acciones button {
+  padding: 0.375rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 4px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.nota-acciones button:hover {
+  background: #e5e7eb;
+  color: #111827;
+}

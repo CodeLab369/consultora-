@@ -1,0 +1,30 @@
+.cliente-detalles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.detalle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detalle-item strong {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detalle-item span {
+  color: #111827;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .cliente-detalles {
+    grid-template-columns: 1fr;
+  }
+}

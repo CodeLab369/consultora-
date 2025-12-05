@@ -1,0 +1,198 @@
+.ajustes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ajustes-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.btn-actualizar,
+.btn-backup,
+.btn-restore {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-actualizar:hover,
+.btn-backup:hover,
+.btn-restore:hover {
+  transform: translateY(-2px);
+}
+
+.opciones-grupo {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.opciones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.opciones-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.btn-agregar {
+  padding: 0.375rem 0.875rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-agregar:hover {
+  background: #059669;
+}
+
+.opciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.opcion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.opcion-item span {
+  flex: 1;
+  color: #111827;
+}
+
+.opcion-item input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.opcion-item input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.opcion-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.opcion-acciones button,
+.btn-guardar-sm,
+.btn-cancelar-sm {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.opcion-acciones button:first-child,
+.btn-guardar-sm {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.opcion-acciones button:first-child:hover,
+.btn-guardar-sm:hover {
+  background: #bfdbfe;
+}
+
+.opcion-acciones button:last-child,
+.btn-cancelar-sm {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.opcion-acciones button:last-child:hover,
+.btn-cancelar-sm:hover {
+  background: #fecaca;
+}
+
+.backup-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.backup-actions button,
+.backup-actions label {
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+}
+
+.restore-section {
+  flex: 1;
+}
+
+.backup-info {
+  margin: 0;
+  padding: 1rem;
+  background: #f0f9ff;
+  border-radius: 6px;
+  color: #075985;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .backup-actions {
+    flex-direction: column;
+  }
+
+  .backup-actions button,
+  .backup-actions label {
+    width: 100%;
+  }
+}
