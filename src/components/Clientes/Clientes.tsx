@@ -21,7 +21,8 @@ export const Clientes = () => {
     tipoEntidad: '',
     administracion: '',
     facturacion: '',
-    consolidacion: ''
+    consolidacion: '',
+    encargado: ''
   });
 
   useEffect(() => {
@@ -71,6 +72,9 @@ export const Clientes = () => {
     }
     if (filtros.consolidacion) {
       resultado = resultado.filter(c => c.consolidacion === filtros.consolidacion);
+    }
+    if (filtros.encargado) {
+      resultado = resultado.filter(c => c.encargado === filtros.encargado);
     }
 
     setClientesFiltrados(resultado);

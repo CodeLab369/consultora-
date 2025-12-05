@@ -10,6 +10,7 @@ interface Filtros {
   administracion: string;
   facturacion: string;
   consolidacion: string;
+  encargado: string;
 }
 
 interface ClientesFiltersProps {
@@ -38,7 +39,8 @@ export const ClientesFilters = ({
       tipoEntidad: '',
       administracion: '',
       facturacion: '',
-      consolidacion: ''
+      consolidacion: '',
+      encargado: ''
     });
   };
 
@@ -117,6 +119,19 @@ export const ClientesFilters = ({
           >
             <option value="">Todos</option>
             {opciones.consolidacion.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label>Encargado</label>
+          <select
+            value={filtros.encargado}
+            onChange={(e) => handleFiltroChange('encargado', e.target.value)}
+          >
+            <option value="">Todos</option>
+            {opciones.encargado.map(opt => (
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
