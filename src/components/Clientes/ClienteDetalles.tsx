@@ -1,5 +1,6 @@
 // Componente para ver los detalles completos de un cliente
 
+import { Edit } from 'lucide-react';
 import type { Cliente } from '../../types';
 import { Modal } from '../common/Modal.tsx';
 import './ClienteDetalles.css';
@@ -7,9 +8,10 @@ import './ClienteDetalles.css';
 interface ClienteDetallesProps {
   cliente: Cliente;
   onCerrar: () => void;
+  onEditar?: () => void;
 }
 
-export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => {
+export const ClienteDetalles = ({ cliente, onCerrar, onEditar }: ClienteDetallesProps) => {
   return (
     <Modal
       isOpen={true}
@@ -175,6 +177,18 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             />
           </div>
         </div>
+
+        {onEditar && (
+          <div className="detalle-footer">
+            <button className="btn-editar-detalle" onClick={() => {
+              onCerrar();
+              onEditar();
+            }}>
+              <Edit size={20} />
+              <span>Editar Cliente</span>
+            </button>
+          </div>
+        )}
       </div>
     </Modal>
   );

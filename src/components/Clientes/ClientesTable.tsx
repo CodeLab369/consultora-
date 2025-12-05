@@ -200,6 +200,10 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
             <ClienteDetalles
               cliente={clienteSeleccionado}
               onCerrar={() => setMostrarDetalles(false)}
+              onEditar={() => {
+                setMostrarDetalles(false);
+                onEditar(clienteSeleccionado);
+              }}
             />
           )}
           {mostrarNotas && (
