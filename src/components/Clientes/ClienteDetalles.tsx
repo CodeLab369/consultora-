@@ -10,6 +10,17 @@ interface ClienteDetallesProps {
 }
 
 export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => {
+  // Debug: Verificar los valores del cliente
+  console.log('Cliente en Detalles:', {
+    administracion: cliente.administracion,
+    facturacion: cliente.facturacion,
+    regimen: cliente.regimen,
+    consolidacion: cliente.consolidacion,
+    encargado: cliente.encargado,
+    tipoContribuyente: cliente.tipoContribuyente,
+    tipoEntidad: cliente.tipoEntidad
+  });
+
   const formatearValor = (valor: string | undefined) => {
     if (!valor || valor.trim() === '') {
       return 'No especificado';
