@@ -29,6 +29,8 @@ export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesi
 
   return (
     <div className="layout">
+      {menuAbierto && <div className="sidebar-overlay" onClick={() => setMenuAbierto(false)} />}
+      
       <aside className={`sidebar ${menuAbierto ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <h2>Consultora</h2>

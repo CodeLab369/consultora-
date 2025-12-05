@@ -84,6 +84,7 @@
   flex-direction: column;
   overflow: hidden;
   background: #f9fafb;
+  width: 100%;
 }
 
 .header {
@@ -160,10 +161,18 @@
 @media (min-width: 769px) {
   .sidebar {
     position: relative;
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
   
   .sidebar-overlay {
+    display: none !important;
+  }
+  
+  .menu-toggle {
     display: none;
+  }
+  
+  .main-content {
+    margin-left: 0;
   }
 }
