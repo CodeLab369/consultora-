@@ -22,6 +22,9 @@ export const Ajustes = () => {
   const [opciones, setOpciones] = useState<OpcionesListas | null>(null);
   const [opcionEditar, setOpcionEditar] = useState<{ campo: keyof OpcionesListas; indice: number } | null>(null);
   const [valorEditar, setValorEditar] = useState('');
+  const [mostrarModalAgregar, setMostrarModalAgregar] = useState(false);
+  const [campoAgregar, setCampoAgregar] = useState<keyof OpcionesListas | null>(null);
+  const [nuevaOpcionValor, setNuevaOpcionValor] = useState('');
   const [mostrarConfirmRestore, setMostrarConfirmRestore] = useState(false);
   const [archivoBackup, setArchivoBackup] = useState<File | null>(null);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
@@ -50,18 +53,23 @@ export const Ajustes = () => {
   };
 
   const handleAgregarOpcion = async (campo: keyof OpcionesListas) => {
-    if (!opciones) return;
+    setCampoAgregar(campo);
+    setMostrarModalAgregar(true);
+  };
+
+  const handleConfirmarAgregar = async () => {
+    if (!opciones || !campoAgregar || !nuevaOpcionValor.trim()) return;
     
-    const nuevaOpcion = prompt(`Ingrese nueva opción para ${campo}:`);
-    if (nuevaOpcion && nuevaOpcion.trim()) {
-      const nuevasOpciones = {
-        ...opciones,
-        [campo]: [...opciones[campo], nuevaOpcion.trim()]
-      };
-      await actualizarOpciones(nuevasOpciones);
-      setNotificacion({ tipo: 'success', mensaje: 'Opción agregada' });
-      cargarDatos();
-    }
+    const nuevasOpciones = {
+      ...opciones,
+      [campoAgregar]: [...opciones[campoAgregar], nuevaOpcionValor.trim()]
+    };
+    await actualizarOpciones(nuevasOpciones);
+    setNotificacion({ tipo: 'success', mensaje: 'Opción agregada correctamente' });
+    setMostrarModalAgregar(false);
+    setCampoAgregar(null);
+    setNuevaOpcionValor('');
+    cargarDatos();
   };
 
   const handleEditarOpcion = async () => {
@@ -278,6 +286,42 @@ export const Ajustes = () => {
         confirmText="Restaurar"
         type="warning"
       />
+
+      {mostrarModalAgregar && campoAgregar && (
+        <div className="modal-overlay" onClick={() => setMostrarModalAgregar(false)}>
+          <div className="modal-agregar" onClick={(e) => e.stopPropagation()}>
+            <h3>Agregar Nueva Opción</h3>
+            <p className="modal-campo">Campo: <strong>{campoAgregar}</strong></p>
+            <input
+              type="text"
+              placeholder="Ingrese la nueva opción"
+              value={nuevaOpcionValor}
+              onChange={(e) => setNuevaOpcionValor(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleConfirmarAgregar()}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button 
+                className="btn-cancelar" 
+                onClick={() => {
+                  setMostrarModalAgregar(false);
+                  setCampoAgregar(null);
+                  setNuevaOpcionValor('');
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="btn-guardar" 
+                onClick={handleConfirmarAgregar}
+                disabled={!nuevaOpcionValor.trim()}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {notificacion && (
         <Notification
