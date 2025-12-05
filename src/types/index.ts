@@ -9,6 +9,7 @@ export interface Cliente {
   tipoContribuyente: string;
   tipoEntidad: string;
   contacto: string;
+  etiquetas: string[];
   administracion: string;
   facturacion: string;
   regimen: string;
@@ -47,6 +48,13 @@ export interface PDFUnido {
 export interface Credenciales {
   usuario: string;
   contrasena: string;
+}
+
+export interface Etiqueta {
+  id: string;
+  nombre: string;
+  color: string;
+  fechaCreacion: string;
 }
 
 export interface OpcionesListas {

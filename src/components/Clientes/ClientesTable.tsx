@@ -1,7 +1,7 @@
 // Componente de tabla de clientes con paginación
 
 import { useState } from 'react';
-import { Eye, FileText, Upload, Copy, Edit, Trash2 } from 'lucide-react';
+import { Eye, FileText, Upload, Edit, Trash2, Tag } from 'lucide-react';
 import type { Cliente } from '../../types';
 import { ClienteDetalles } from './ClienteDetalles.tsx';
 import { ClienteNotas } from './ClienteNotas.tsx';
@@ -58,14 +58,9 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
     setMostrarArchivos(true);
   };
 
-  const handleCopiar = async (cliente: Cliente) => {
-    const texto = `NIT/CUR/CI: ${cliente.nitCurCi}\nCorreo: ${cliente.correo}\nContraseña: ${cliente.contrasena}`;
-    try {
-      await navigator.clipboard.writeText(texto);
-      setNotificacion({ tipo: 'success', mensaje: 'Información copiada al portapapeles' });
-    } catch (error) {
-      setNotificacion({ tipo: 'error', mensaje: 'Error al copiar la información' });
-    }
+  const handleEtiquetas = (_cliente: Cliente) => {
+    // TODO: Abrir modal de gestión de etiquetas
+    setNotificacion({ tipo: 'info', mensaje: 'Gestión de etiquetas próximamente' });
   };
 
   const handleEliminar = (cliente: Cliente) => {
@@ -99,7 +94,7 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
             <tr>
               <th>NIT/CUR/CI</th>
               <th>Razón Social</th>
-              <th>Contacto</th>
+              <th>Etiquetas</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -108,7 +103,15 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
               <tr key={cliente.id}>
                 <td>{cliente.nitCurCi}</td>
                 <td>{cliente.razonSocial}</td>
-                <td>{cliente.contacto}</td>
+                <td>
+                  <div className="etiquetas-cell">
+                    {cliente.etiquetas && cliente.etiquetas.length > 0 ? (
+                      <span className="etiquetas-count">{cliente.etiquetas.length} etiqueta(s)</span>
+                    ) : (
+                      <span className="sin-etiquetas">Sin etiquetas</span>
+                    )}
+                  </div>
+                </td>
                 <td>
                   <div className="acciones">
                     <button
@@ -133,11 +136,11 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
                       <Upload size={18} />
                     </button>
                     <button
-                      className="btn-accion btn-copiar"
-                      onClick={() => handleCopiar(cliente)}
-                      title="Copiar información"
+                      className="btn-accion btn-etiquetas"
+                      onClick={() => handleEtiquetas(cliente)}
+                      title="Gestionar etiquetas"
                     >
-                      <Copy size={18} />
+                      <Tag size={18} />
                     </button>
                     <button
                       className="btn-accion btn-editar"

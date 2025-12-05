@@ -12,6 +12,46 @@
   box-shadow: none !important;
 }
 
+/* Input con botón de copiar */
+.form-field-with-copy {
+  position: relative;
+}
+
+.input-with-copy {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-with-copy input {
+  flex: 1;
+}
+
+.btn-copy {
+  padding: 0.625rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+.btn-copy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-copy:active {
+  transform: translateY(0);
+}
+
 /* Footer con botón de editar */
 .detalle-footer {
   margin-top: 2rem;

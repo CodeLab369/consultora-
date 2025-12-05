@@ -1,7 +1,7 @@
 // Servicio de base de datos usando IndexedDB para almacenamiento offline
 
 import localforage from 'localforage';
-import type { Cliente, Nota, ArchivoPDF, PDFUnido, Credenciales, OpcionesListas } from '../types';
+import type { Cliente, Nota, ArchivoPDF, PDFUnido, Credenciales, OpcionesListas, Etiqueta } from '../types';
 import { OPCIONES_INICIALES } from '../types';
 
 // Configurar localforage
@@ -17,6 +17,7 @@ const notasStore = localforage.createInstance({ name: 'notas' });
 const archivosStore = localforage.createInstance({ name: 'archivos' });
 const pdfUnidosStore = localforage.createInstance({ name: 'pdfUnidos' });
 const configStore = localforage.createInstance({ name: 'config' });
+const etiquetasStore = localforage.createInstance({ name: 'etiquetas' });
 
 // Inicializar credenciales por defecto
 export const inicializarCredenciales = async (): Promise<void> => {
@@ -209,4 +210,29 @@ export const restaurarBackup = async (backupJson: string): Promise<void> => {
   
   await actualizarCredenciales(backup.credenciales);
   await actualizarOpciones(backup.opciones);
+};
+
+// ETIQUETAS
+export const obtenerEtiquetas = async (): Promise<Etiqueta[]> => {
+  const etiquetas: Etiqueta[] = [];
+  await etiquetasStore.iterate<Etiqueta, void>((value) => {
+    etiquetas.push(value);
+  });
+  return etiquetas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+};
+
+export const guardarEtiqueta = async (etiqueta: Etiqueta): Promise<void> => {
+  await etiquetasStore.setItem(etiqueta.id, etiqueta);
+};
+
+export const eliminarEtiqueta = async (id: string): Promise<void> => {
+  await etiquetasStore.removeItem(id);
+  // Eliminar etiqueta de todos los clientes
+  const clientes = await obtenerClientes();
+  for (const cliente of clientes) {
+    if (cliente.etiquetas?.includes(id)) {
+      cliente.etiquetas = cliente.etiquetas.filter(e => e !== id);
+      await guardarCliente(cliente);
+    }
+  }
 };

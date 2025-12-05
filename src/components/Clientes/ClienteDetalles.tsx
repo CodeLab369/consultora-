@@ -1,6 +1,7 @@
 // Componente para ver los detalles completos de un cliente
 
-import { Edit } from 'lucide-react';
+import { useState } from 'react';
+import { Edit, Copy, Check } from 'lucide-react';
 import type { Cliente } from '../../types';
 import { Modal } from '../common/Modal.tsx';
 import './ClienteDetalles.css';
@@ -12,6 +13,18 @@ interface ClienteDetallesProps {
 }
 
 export const ClienteDetalles = ({ cliente, onCerrar, onEditar }: ClienteDetallesProps) => {
+  const [copiado, setCopiado] = useState<string | null>(null);
+
+  const copiarAlPortapapeles = async (texto: string, campo: string) => {
+    try {
+      await navigator.clipboard.writeText(texto);
+      setCopiado(campo);
+      setTimeout(() => setCopiado(null), 2000);
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
+  };
+
   return (
     <Modal
       isOpen={true}
@@ -21,14 +34,23 @@ export const ClienteDetalles = ({ cliente, onCerrar, onEditar }: ClienteDetalles
     >
       <div className="cliente-form">
         <div className="form-grid">
-          <div className="form-field">
+          <div className="form-field form-field-with-copy">
             <label>NIT/CUR/CI</label>
-            <input
-              type="text"
-              value={cliente.nitCurCi || ''}
-              readOnly
-              className="input-readonly"
-            />
+            <div className="input-with-copy">
+              <input
+                type="text"
+                value={cliente.nitCurCi || ''}
+                readOnly
+                className="input-readonly"
+              />
+              <button
+                className="btn-copy"
+                onClick={() => copiarAlPortapapeles(cliente.nitCurCi, 'nit')}
+                title="Copiar NIT/CUR/CI"
+              >
+                {copiado === 'nit' ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
           </div>
 
           <div className="form-field">
@@ -41,24 +63,42 @@ export const ClienteDetalles = ({ cliente, onCerrar, onEditar }: ClienteDetalles
             />
           </div>
 
-          <div className="form-field">
+          <div className="form-field form-field-with-copy">
             <label>Correo Electrónico</label>
-            <input
-              type="text"
-              value={cliente.correo || ''}
-              readOnly
-              className="input-readonly"
-            />
+            <div className="input-with-copy">
+              <input
+                type="text"
+                value={cliente.correo || ''}
+                readOnly
+                className="input-readonly"
+              />
+              <button
+                className="btn-copy"
+                onClick={() => copiarAlPortapapeles(cliente.correo, 'correo')}
+                title="Copiar Correo"
+              >
+                {copiado === 'correo' ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
           </div>
 
-          <div className="form-field">
+          <div className="form-field form-field-with-copy">
             <label>Contraseña</label>
-            <input
-              type="text"
-              value={cliente.contrasena || ''}
-              readOnly
-              className="input-readonly"
-            />
+            <div className="input-with-copy">
+              <input
+                type="text"
+                value={cliente.contrasena || ''}
+                readOnly
+                className="input-readonly"
+              />
+              <button
+                className="btn-copy"
+                onClick={() => copiarAlPortapapeles(cliente.contrasena, 'contrasena')}
+                title="Copiar Contraseña"
+              >
+                {copiado === 'contrasena' ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
           </div>
 
           <div className="form-field">

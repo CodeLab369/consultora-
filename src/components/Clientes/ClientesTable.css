@@ -83,12 +83,12 @@
   background: #a7f3d0;
 }
 
-.btn-copiar {
+.btn-etiquetas {
   background: #e0e7ff;
   color: #3730a3;
 }
 
-.btn-copiar:hover {
+.btn-etiquetas:hover {
   background: #c7d2fe;
 }
 
@@ -108,6 +108,28 @@
 
 .btn-eliminar:hover {
   background: #fecaca;
+}
+
+/* Columna de etiquetas */
+.etiquetas-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.etiquetas-count {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.sin-etiquetas {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.875rem;
 }
 
 .table-footer {
