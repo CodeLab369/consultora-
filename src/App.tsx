@@ -54,7 +54,12 @@ function App() {
 
   const handleCambiarSeccion = (seccion: Seccion) => {
     setSeccionActual(seccion);
-    setMostrarDashboard(false);
+    // Si volvemos a 'clientes', mostramos el dashboard
+    if (seccion === 'clientes') {
+      setMostrarDashboard(true);
+    } else {
+      setMostrarDashboard(false);
+    }
   };
 
   if (!inicializado) {

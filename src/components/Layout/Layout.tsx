@@ -11,7 +11,7 @@ interface LayoutProps {
   onCerrarSesion: () => void;
 }
 
-export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesion }: LayoutProps) => {
+export const Layout = ({ children, onCambiarSeccion, onCerrarSesion }: LayoutProps) => {
   const secciones = [
     { 
       id: 'clientes' as Seccion, 
@@ -44,7 +44,11 @@ export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesi
   ];
 
   // Determinar si estamos en el dashboard (inicio) o en una sección específica
-  const enDashboard = seccionActual === 'clientes' && !children;
+  const enDashboard = !children;
+
+  const handleVolverInicio = () => {
+    onCambiarSeccion('clientes' as Seccion);
+  };
 
   return (
     <div className="layout">
@@ -98,7 +102,7 @@ export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesi
           </div>
         ) : (
           <div className="section-view">
-            <button className="btn-back" onClick={() => onCambiarSeccion('clientes' as Seccion)}>
+            <button className="btn-back" onClick={handleVolverInicio}>
               <Home size={20} />
               <span>Volver al Inicio</span>
             </button>
