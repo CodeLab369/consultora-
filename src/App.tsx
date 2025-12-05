@@ -54,12 +54,11 @@ function App() {
 
   const handleCambiarSeccion = (seccion: Seccion) => {
     setSeccionActual(seccion);
-    // Si volvemos a 'clientes', mostramos el dashboard
-    if (seccion === 'clientes') {
-      setMostrarDashboard(true);
-    } else {
-      setMostrarDashboard(false);
-    }
+    setMostrarDashboard(false);
+  };
+
+  const handleVolverInicio = () => {
+    setMostrarDashboard(true);
   };
 
   if (!inicializado) {
@@ -110,6 +109,7 @@ function App() {
       <Layout
         seccionActual={seccionActual}
         onCambiarSeccion={handleCambiarSeccion}
+        onVolverInicio={handleVolverInicio}
         onCerrarSesion={handleCerrarSesion}
       >
         {renderSeccion()}

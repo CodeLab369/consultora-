@@ -8,10 +8,11 @@ interface LayoutProps {
   children: React.ReactNode;
   seccionActual: Seccion;
   onCambiarSeccion: (seccion: Seccion) => void;
+  onVolverInicio: () => void;
   onCerrarSesion: () => void;
 }
 
-export const Layout = ({ children, onCambiarSeccion, onCerrarSesion }: LayoutProps) => {
+export const Layout = ({ children, onCambiarSeccion, onVolverInicio, onCerrarSesion }: LayoutProps) => {
   const secciones = [
     { 
       id: 'clientes' as Seccion, 
@@ -45,10 +46,6 @@ export const Layout = ({ children, onCambiarSeccion, onCerrarSesion }: LayoutPro
 
   // Determinar si estamos en el dashboard (inicio) o en una sección específica
   const enDashboard = !children;
-
-  const handleVolverInicio = () => {
-    onCambiarSeccion('clientes' as Seccion);
-  };
 
   return (
     <div className="layout">
@@ -102,7 +99,7 @@ export const Layout = ({ children, onCambiarSeccion, onCerrarSesion }: LayoutPro
           </div>
         ) : (
           <div className="section-view">
-            <button className="btn-back" onClick={handleVolverInicio}>
+            <button className="btn-back" onClick={onVolverInicio}>
               <Home size={20} />
               <span>Volver al Inicio</span>
             </button>
