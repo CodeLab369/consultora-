@@ -10,33 +10,40 @@ interface ClienteDetallesProps {
 }
 
 export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => {
+  const formatearValor = (valor: string | undefined) => {
+    if (!valor || valor.trim() === '') {
+      return 'No especificado';
+    }
+    return valor;
+  };
+
   const seccionIdentificacion = [
-    { label: 'NIT/CUR/CI', valor: cliente.nitCurCi },
-    { label: 'Razón Social', valor: cliente.razonSocial },
-    { label: 'Tipo de Contribuyente', valor: cliente.tipoContribuyente },
-    { label: 'Tipo de Entidad', valor: cliente.tipoEntidad }
+    { label: 'NIT/CUR/CI', valor: formatearValor(cliente.nitCurCi) },
+    { label: 'Razón Social', valor: formatearValor(cliente.razonSocial) },
+    { label: 'Tipo de Contribuyente', valor: formatearValor(cliente.tipoContribuyente) },
+    { label: 'Tipo de Entidad', valor: formatearValor(cliente.tipoEntidad) }
   ];
 
   const seccionContacto = [
-    { label: 'Correo Electrónico', valor: cliente.correo },
-    { label: 'Contacto', valor: cliente.contacto },
-    { label: 'Dirección', valor: cliente.direccion }
+    { label: 'Correo Electrónico', valor: formatearValor(cliente.correo) },
+    { label: 'Contacto', valor: formatearValor(cliente.contacto) },
+    { label: 'Dirección', valor: formatearValor(cliente.direccion) }
   ];
 
   const seccionAcceso = [
-    { label: 'Contraseña', valor: cliente.contrasena }
+    { label: 'Contraseña', valor: formatearValor(cliente.contrasena) }
   ];
 
   const seccionTributaria = [
-    { label: 'Administración', valor: cliente.administracion },
-    { label: 'Facturación', valor: cliente.facturacion },
-    { label: 'Régimen', valor: cliente.regimen },
-    { label: 'Actividad', valor: cliente.actividad },
-    { label: 'Consolidación', valor: cliente.consolidacion }
+    { label: 'Administración', valor: formatearValor(cliente.administracion) },
+    { label: 'Facturación', valor: formatearValor(cliente.facturacion) },
+    { label: 'Régimen', valor: formatearValor(cliente.regimen) },
+    { label: 'Actividad', valor: formatearValor(cliente.actividad) },
+    { label: 'Consolidación', valor: formatearValor(cliente.consolidacion) }
   ];
 
   const seccionGestion = [
-    { label: 'Encargado', valor: cliente.encargado },
+    { label: 'Encargado', valor: formatearValor(cliente.encargado) },
     { label: 'Fecha de Creación', valor: new Date(cliente.fechaCreacion).toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'long',
@@ -60,7 +67,9 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             {seccionIdentificacion.map((campo, index) => (
               <div key={index} className="detalle-item">
                 <strong>{campo.label}</strong>
-                <span>{campo.valor || '-'}</span>
+                <span className={!campo.valor || campo.valor === 'No especificado' ? 'valor-vacio' : ''}>
+                  {campo.valor}
+                </span>
               </div>
             ))}
           </div>
@@ -72,7 +81,9 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             {seccionContacto.map((campo, index) => (
               <div key={index} className="detalle-item">
                 <strong>{campo.label}</strong>
-                <span>{campo.valor || '-'}</span>
+                <span className={!campo.valor || campo.valor === 'No especificado' ? 'valor-vacio' : ''}>
+                  {campo.valor}
+                </span>
               </div>
             ))}
           </div>
@@ -84,7 +95,9 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             {seccionAcceso.map((campo, index) => (
               <div key={index} className="detalle-item">
                 <strong>{campo.label}</strong>
-                <span>{campo.valor || '-'}</span>
+                <span className={!campo.valor || campo.valor === 'No especificado' ? 'valor-vacio' : ''}>
+                  {campo.valor}
+                </span>
               </div>
             ))}
           </div>
@@ -96,7 +109,9 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             {seccionTributaria.map((campo, index) => (
               <div key={index} className="detalle-item">
                 <strong>{campo.label}</strong>
-                <span>{campo.valor || '-'}</span>
+                <span className={!campo.valor || campo.valor === 'No especificado' ? 'valor-vacio' : ''}>
+                  {campo.valor}
+                </span>
               </div>
             ))}
           </div>
@@ -108,7 +123,7 @@ export const ClienteDetalles = ({ cliente, onCerrar }: ClienteDetallesProps) => 
             {seccionGestion.map((campo, index) => (
               <div key={index} className="detalle-item">
                 <strong>{campo.label}</strong>
-                <span>{campo.valor || '-'}</span>
+                <span>{campo.valor}</span>
               </div>
             ))}
           </div>

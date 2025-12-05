@@ -53,6 +53,12 @@
   border-left: 3px solid #667eea;
 }
 
+.detalle-item span.valor-vacio {
+  color: #9ca3af;
+  font-style: italic;
+  border-left-color: #d1d5db;
+}
+
 @media (max-width: 768px) {
   .cliente-detalles {
     gap: 1.5rem;
