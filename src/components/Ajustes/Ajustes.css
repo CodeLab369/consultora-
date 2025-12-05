@@ -186,6 +186,101 @@
   line-height: 1.5;
 }
 
+/* Etiquetas */
+.etiquetas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.etiqueta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  gap: 0.75rem;
+}
+
+.etiqueta-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.etiqueta-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.etiqueta-item span {
+  color: #111827;
+  font-weight: 500;
+}
+
+.sin-datos {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+  margin: 1rem 0 0 0;
+}
+
+.modal-etiqueta .form-field {
+  margin-bottom: 1rem;
+}
+
+.modal-etiqueta .form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.modal-etiqueta .form-field input {
+  margin-bottom: 0;
+}
+
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.color-picker input[type="color"] {
+  width: 60px;
+  height: 40px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.color-valor {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 /* Modal Agregar Opción */
 .modal-overlay {
   position: fixed;

@@ -55,6 +55,10 @@ export const guardarCliente = async (cliente: Cliente): Promise<void> => {
   await clientesStore.setItem(cliente.id, cliente);
 };
 
+export const actualizarCliente = async (cliente: Cliente): Promise<void> => {
+  await clientesStore.setItem(cliente.id, cliente);
+};
+
 export const eliminarCliente = async (id: string): Promise<void> => {
   await clientesStore.removeItem(id);
   // Eliminar notas y archivos asociados

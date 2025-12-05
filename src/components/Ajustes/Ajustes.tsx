@@ -1,13 +1,16 @@
 // Componente de la sección Ajustes
 
 import { useState, useEffect } from 'react';
-import { Key, List, Database } from 'lucide-react';
-import type { OpcionesListas } from '../../types';
+import { Key, List, Database, Tag } from 'lucide-react';
+import type { OpcionesListas, Etiqueta } from '../../types';
 import { 
   obtenerCredenciales, 
   actualizarCredenciales, 
   obtenerOpciones, 
   actualizarOpciones,
+  obtenerEtiquetas,
+  guardarEtiqueta,
+  eliminarEtiqueta,
   crearBackup,
   restaurarBackup
 } from '../../services/database';
@@ -20,11 +23,16 @@ export const Ajustes = () => {
   const [nuevoUsuario, setNuevoUsuario] = useState('');
   const [nuevaContrasena, setNuevaContrasena] = useState('');
   const [opciones, setOpciones] = useState<OpcionesListas | null>(null);
+  const [etiquetas, setEtiquetas] = useState<Etiqueta[]>([]);
   const [opcionEditar, setOpcionEditar] = useState<{ campo: keyof OpcionesListas; indice: number } | null>(null);
   const [valorEditar, setValorEditar] = useState('');
   const [mostrarModalAgregar, setMostrarModalAgregar] = useState(false);
   const [campoAgregar, setCampoAgregar] = useState<keyof OpcionesListas | null>(null);
   const [nuevaOpcionValor, setNuevaOpcionValor] = useState('');
+  const [mostrarModalEtiqueta, setMostrarModalEtiqueta] = useState(false);
+  const [etiquetaEditar, setEtiquetaEditar] = useState<Etiqueta | null>(null);
+  const [nombreEtiqueta, setNombreEtiqueta] = useState('');
+  const [colorEtiqueta, setColorEtiqueta] = useState('#667eea');
   const [mostrarConfirmRestore, setMostrarConfirmRestore] = useState(false);
   const [archivoBackup, setArchivoBackup] = useState<File | null>(null);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
@@ -36,9 +44,11 @@ export const Ajustes = () => {
   const cargarDatos = async () => {
     const cred = await obtenerCredenciales();
     const opts = await obtenerOpciones();
+    const etqs = await obtenerEtiquetas();
     setNuevoUsuario(cred.usuario);
     setNuevaContrasena(cred.contrasena);
     setOpciones(opts);
+    setEtiquetas(etqs);
   };
 
   const handleActualizarCredenciales = async () => {
@@ -97,6 +107,47 @@ export const Ajustes = () => {
     };
     await actualizarOpciones(nuevasOpciones);
     setNotificacion({ tipo: 'success', mensaje: 'Opción eliminada' });
+    cargarDatos();
+  };
+
+  const handleAbrirModalEtiqueta = (etiqueta?: Etiqueta) => {
+    if (etiqueta) {
+      setEtiquetaEditar(etiqueta);
+      setNombreEtiqueta(etiqueta.nombre);
+      setColorEtiqueta(etiqueta.color);
+    } else {
+      setEtiquetaEditar(null);
+      setNombreEtiqueta('');
+      setColorEtiqueta('#667eea');
+    }
+    setMostrarModalEtiqueta(true);
+  };
+
+  const handleGuardarEtiqueta = async () => {
+    if (!nombreEtiqueta.trim()) {
+      setNotificacion({ tipo: 'error', mensaje: 'El nombre es obligatorio' });
+      return;
+    }
+
+    const etiqueta: Etiqueta = {
+      id: etiquetaEditar?.id || `etiqueta-${Date.now()}`,
+      nombre: nombreEtiqueta.trim(),
+      color: colorEtiqueta,
+      fechaCreacion: etiquetaEditar?.fechaCreacion || new Date().toISOString()
+    };
+
+    await guardarEtiqueta(etiqueta);
+    setNotificacion({ 
+      tipo: 'success', 
+      mensaje: etiquetaEditar ? 'Etiqueta actualizada' : 'Etiqueta creada' 
+    });
+    setMostrarModalEtiqueta(false);
+    cargarDatos();
+  };
+
+  const handleEliminarEtiqueta = async (id: string) => {
+    await eliminarEtiqueta(id);
+    setNotificacion({ tipo: 'success', mensaje: 'Etiqueta eliminada' });
     cargarDatos();
   };
 
@@ -247,6 +298,49 @@ export const Ajustes = () => {
 
       <div className="ajustes-panel">
         <div className="panel-header">
+          <Tag size={24} />
+          <h2>Gestión de Etiquetas</h2>
+        </div>
+        <div className="panel-content">
+          <div className="opciones-header">
+            <h3>Etiquetas Disponibles</h3>
+            <button 
+              className="btn-agregar"
+              onClick={() => handleAbrirModalEtiqueta()}
+            >
+              + Agregar Etiqueta
+            </button>
+          </div>
+          <div className="etiquetas-lista">
+            {etiquetas.length === 0 ? (
+              <p className="sin-datos">No hay etiquetas creadas</p>
+            ) : (
+              etiquetas.map((etiqueta) => (
+                <div key={etiqueta.id} className="etiqueta-item">
+                  <div className="etiqueta-info">
+                    <div 
+                      className="etiqueta-color" 
+                      style={{ backgroundColor: etiqueta.color }}
+                    />
+                    <span>{etiqueta.nombre}</span>
+                  </div>
+                  <div className="opcion-acciones">
+                    <button onClick={() => handleAbrirModalEtiqueta(etiqueta)}>
+                      Editar
+                    </button>
+                    <button onClick={() => handleEliminarEtiqueta(etiqueta.id)}>
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="ajustes-panel">
+        <div className="panel-header">
           <Database size={24} />
           <h2>Backup y Restauración</h2>
         </div>
@@ -317,6 +411,56 @@ export const Ajustes = () => {
                 disabled={!nuevaOpcionValor.trim()}
               >
                 Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrarModalEtiqueta && (
+        <div className="modal-overlay" onClick={() => setMostrarModalEtiqueta(false)}>
+          <div className="modal-agregar modal-etiqueta" onClick={(e) => e.stopPropagation()}>
+            <h3>{etiquetaEditar ? 'Editar Etiqueta' : 'Nueva Etiqueta'}</h3>
+            <div className="form-field">
+              <label>Nombre</label>
+              <input
+                type="text"
+                placeholder="Nombre de la etiqueta"
+                value={nombreEtiqueta}
+                onChange={(e) => setNombreEtiqueta(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleGuardarEtiqueta()}
+                autoFocus
+              />
+            </div>
+            <div className="form-field">
+              <label>Color</label>
+              <div className="color-picker">
+                <input
+                  type="color"
+                  value={colorEtiqueta}
+                  onChange={(e) => setColorEtiqueta(e.target.value)}
+                />
+                <span className="color-valor">{colorEtiqueta}</span>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="btn-cancelar" 
+                onClick={() => {
+                  setMostrarModalEtiqueta(false);
+                  setEtiquetaEditar(null);
+                  setNombreEtiqueta('');
+                  setColorEtiqueta('#667eea');
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="btn-guardar" 
+                onClick={handleGuardarEtiqueta}
+                disabled={!nombreEtiqueta.trim()}
+              >
+                {etiquetaEditar ? 'Actualizar' : 'Crear'}
               </button>
             </div>
           </div>

@@ -1,15 +1,16 @@
 // Componente de tabla de clientes con paginación
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, FileText, Upload, Edit, Trash2, Tag } from 'lucide-react';
-import type { Cliente } from '../../types';
+import type { Cliente, Etiqueta } from '../../types';
 import { ClienteDetalles } from './ClienteDetalles.tsx';
 import { ClienteNotas } from './ClienteNotas.tsx';
 import { ClienteArchivos } from './ClienteArchivos.tsx';
+import { ClienteEtiquetas } from './ClienteEtiquetas.tsx';
 import { ConfirmDialog } from '../common/ConfirmDialog.tsx';
 import { Notification } from '../common/Notification.tsx';
 import type { NotificationType } from '../common/Notification';
-import { eliminarCliente } from '../../services/database';
+import { eliminarCliente, actualizarCliente, obtenerEtiquetas } from '../../services/database';
 import './ClientesTable.css';
 
 interface ClientesTableProps {
@@ -25,8 +26,20 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
   const [mostrarDetalles, setMostrarDetalles] = useState(false);
   const [mostrarNotas, setMostrarNotas] = useState(false);
   const [mostrarArchivos, setMostrarArchivos] = useState(false);
+  const [mostrarEtiquetas, setMostrarEtiquetas] = useState(false);
   const [mostrarConfirmEliminar, setMostrarConfirmEliminar] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
+  const [etiquetasMap, setEtiquetasMap] = useState<Map<string, Etiqueta>>(new Map());
+
+  useEffect(() => {
+    cargarEtiquetas();
+  }, []);
+
+  const cargarEtiquetas = async () => {
+    const etqs = await obtenerEtiquetas();
+    const map = new Map(etqs.map(e => [e.id, e]));
+    setEtiquetasMap(map);
+  };
 
   const totalPaginas = Math.ceil(clientes.length / filasPorPagina);
   const indiceInicio = (paginaActual - 1) * filasPorPagina;
@@ -58,9 +71,23 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
     setMostrarArchivos(true);
   };
 
-  const handleEtiquetas = (_cliente: Cliente) => {
-    // TODO: Abrir modal de gestión de etiquetas
-    setNotificacion({ tipo: 'info', mensaje: 'Gestión de etiquetas próximamente' });
+  const handleEtiquetas = (cliente: Cliente) => {
+    setClienteSeleccionado(cliente);
+    setMostrarEtiquetas(true);
+  };
+
+  const handleGuardarEtiquetas = async (etiquetas: string[]) => {
+    if (clienteSeleccionado) {
+      const clienteActualizado = {
+        ...clienteSeleccionado,
+        etiquetas
+      };
+      await actualizarCliente(clienteActualizado);
+      setMostrarEtiquetas(false);
+      setClienteSeleccionado(null);
+      setNotificacion({ tipo: 'success', mensaje: 'Etiquetas actualizadas' });
+      onActualizar();
+    }
   };
 
   const handleEliminar = (cliente: Cliente) => {
@@ -106,7 +133,23 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
                 <td>
                   <div className="etiquetas-cell">
                     {cliente.etiquetas && cliente.etiquetas.length > 0 ? (
-                      <span className="etiquetas-count">{cliente.etiquetas.length} etiqueta(s)</span>
+                      <div className="etiquetas-badges">
+                        {cliente.etiquetas.slice(0, 3).map(etiqId => {
+                          const etiqueta = etiquetasMap.get(etiqId);
+                          return etiqueta ? (
+                            <span 
+                              key={etiqId}
+                              className="etiqueta-badge"
+                              style={{ backgroundColor: etiqueta.color }}
+                            >
+                              {etiqueta.nombre}
+                            </span>
+                          ) : null;
+                        })}
+                        {cliente.etiquetas.length > 3 && (
+                          <span className="etiquetas-mas">+{cliente.etiquetas.length - 3}</span>
+                        )}
+                      </div>
                     ) : (
                       <span className="sin-etiquetas">Sin etiquetas</span>
                     )}
@@ -219,6 +262,13 @@ export const ClientesTable = ({ clientes, onEditar, onActualizar }: ClientesTabl
             <ClienteArchivos
               cliente={clienteSeleccionado}
               onCerrar={() => setMostrarArchivos(false)}
+            />
+          )}
+          {mostrarEtiquetas && (
+            <ClienteEtiquetas
+              cliente={clienteSeleccionado}
+              onClose={() => setMostrarEtiquetas(false)}
+              onSave={handleGuardarEtiquetas}
             />
           )}
         </>
