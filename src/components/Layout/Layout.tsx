@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesion }: LayoutProps) => {
-  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(window.innerWidth > 768);
 
   const secciones = [
     { id: 'clientes' as Seccion, nombre: 'Clientes', icono: Users },
@@ -24,7 +24,9 @@ export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesi
 
   const handleCambiarSeccion = (seccion: Seccion) => {
     onCambiarSeccion(seccion);
-    setMenuAbierto(false);
+    if (window.innerWidth <= 768) {
+      setMenuAbierto(false);
+    }
   };
 
   return (
