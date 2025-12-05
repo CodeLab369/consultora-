@@ -20,6 +20,7 @@ import './App.css';
 function App() {
   const [autenticado, setAutenticado] = useState(false);
   const [seccionActual, setSeccionActual] = useState<Seccion>('clientes');
+  const [mostrarDashboard, setMostrarDashboard] = useState(true);
   const [inicializado, setInicializado] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
@@ -47,7 +48,13 @@ function App() {
   const handleCerrarSesion = () => {
     setAutenticado(false);
     setSeccionActual('clientes');
+    setMostrarDashboard(true);
     setNotificacion({ tipo: 'info', mensaje: 'Sesión cerrada' });
+  };
+
+  const handleCambiarSeccion = (seccion: Seccion) => {
+    setSeccionActual(seccion);
+    setMostrarDashboard(false);
   };
 
   if (!inicializado) {
@@ -75,6 +82,10 @@ function App() {
   }
 
   const renderSeccion = () => {
+    if (mostrarDashboard) {
+      return null; // Mostrar el dashboard de tarjetas
+    }
+
     switch (seccionActual) {
       case 'clientes':
         return <Clientes />;
@@ -93,7 +104,7 @@ function App() {
     <>
       <Layout
         seccionActual={seccionActual}
-        onCambiarSeccion={setSeccionActual}
+        onCambiarSeccion={handleCambiarSeccion}
         onCerrarSesion={handleCerrarSesion}
       >
         {renderSeccion()}

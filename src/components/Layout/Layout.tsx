@@ -1,7 +1,6 @@
 // Layout principal de la aplicación
 
-import { useState } from 'react';
-import { Users, FileText, FolderArchive, Settings, LogOut } from 'lucide-react';
+import { Users, FileText, FolderArchive, Settings, LogOut, Home } from 'lucide-react';
 import type { Seccion } from '../../types';
 import './Layout.css';
 
@@ -13,79 +12,102 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children, seccionActual, onCambiarSeccion, onCerrarSesion }: LayoutProps) => {
-  const [menuAbierto, setMenuAbierto] = useState(false);
-
   const secciones = [
-    { id: 'clientes' as Seccion, nombre: 'Clientes', icono: Users },
-    { id: 'unir' as Seccion, nombre: 'Unir', icono: FileText },
-    { id: 'comprimir' as Seccion, nombre: 'Comprimir', icono: FolderArchive },
-    { id: 'ajustes' as Seccion, nombre: 'Ajustes', icono: Settings },
+    { 
+      id: 'clientes' as Seccion, 
+      nombre: 'Gestión de Clientes', 
+      descripcion: 'Administra la información completa de tus clientes',
+      icono: Users,
+      color: '#667eea'
+    },
+    { 
+      id: 'unir' as Seccion, 
+      nombre: 'Unir Documentos PDF', 
+      descripcion: 'Combina múltiples archivos PDF en un solo documento',
+      icono: FileText,
+      color: '#f59e0b'
+    },
+    { 
+      id: 'comprimir' as Seccion, 
+      nombre: 'Comprimir Archivos', 
+      descripcion: 'Crea archivos ZIP con los documentos de tus clientes',
+      icono: FolderArchive,
+      color: '#10b981'
+    },
+    { 
+      id: 'ajustes' as Seccion, 
+      nombre: 'Configuración', 
+      descripcion: 'Ajusta las opciones y preferencias del sistema',
+      icono: Settings,
+      color: '#6366f1'
+    },
   ];
 
-  const handleCambiarSeccion = (seccion: Seccion) => {
-    onCambiarSeccion(seccion);
-    setMenuAbierto(false);
-  };
+  // Determinar si estamos en el dashboard (inicio) o en una sección específica
+  const enDashboard = seccionActual === 'clientes' && !children;
 
   return (
     <div className="layout">
-      {menuAbierto && <div className="sidebar-overlay" onClick={() => setMenuAbierto(false)} />}
-      
-      <aside className={`sidebar ${menuAbierto ? 'sidebar-open' : ''}`}>
-        <div className="sidebar-header">
-          <h2>Consultora</h2>
-        </div>
-
-        <nav className="sidebar-nav">
-          {secciones.map((seccion) => {
-            const Icon = seccion.icono;
-            return (
-              <button
-                key={seccion.id}
-                className={`nav-item ${seccionActual === seccion.id ? 'nav-item-active' : ''}`}
-                onClick={() => handleCambiarSeccion(seccion.id)}
-              >
-                <Icon size={20} />
-                <span>{seccion.nombre}</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="nav-item" onClick={onCerrarSesion}>
+      <header className="app-header">
+        <div className="header-content">
+          <div className="header-logo">
+            <div className="logo-icon">
+              <Users size={32} />
+            </div>
+            <div className="logo-text">
+              <h1>Consultora</h1>
+              <p>Sistema de Gestión</p>
+            </div>
+          </div>
+          <button className="btn-logout" onClick={onCerrarSesion}>
             <LogOut size={20} />
             <span>Cerrar Sesión</span>
           </button>
         </div>
-      </aside>
+      </header>
 
-      <div className="main-content">
-        <header className="header">
-          <button 
-            className="menu-toggle"
-            onClick={() => setMenuAbierto(!menuAbierto)}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-          <h1>
-            {secciones.find(s => s.id === seccionActual)?.nombre}
-          </h1>
-        </header>
-
-        <main className="content">
-          {children}
-        </main>
-      </div>
-
-      {menuAbierto && (
-        <div 
-          className="sidebar-overlay"
-          onClick={() => setMenuAbierto(false)}
-        />
-      )}
+      <main className="app-main">
+        {enDashboard ? (
+          <div className="dashboard">
+            <div className="dashboard-header">
+              <h2>Bienvenido al Sistema de Gestión</h2>
+              <p>Selecciona una opción para comenzar</p>
+            </div>
+            <div className="cards-grid">
+              {secciones.map((seccion) => {
+                const Icon = seccion.icono;
+                return (
+                  <button
+                    key={seccion.id}
+                    className="card"
+                    onClick={() => onCambiarSeccion(seccion.id)}
+                    style={{ '--card-color': seccion.color } as React.CSSProperties}
+                  >
+                    <div className="card-icon" style={{ backgroundColor: seccion.color }}>
+                      <Icon size={40} />
+                    </div>
+                    <div className="card-content">
+                      <h3>{seccion.nombre}</h3>
+                      <p>{seccion.descripcion}</p>
+                    </div>
+                    <div className="card-arrow">→</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="section-view">
+            <button className="btn-back" onClick={() => onCambiarSeccion('clientes' as Seccion)}>
+              <Home size={20} />
+              <span>Volver al Inicio</span>
+            </button>
+            <div className="section-content">
+              {children}
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };
