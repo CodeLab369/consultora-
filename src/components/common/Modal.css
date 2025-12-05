@@ -31,13 +31,6 @@
   animation: slideUp 0.3s ease-out;
 }
 
-/* Tablets en orientación vertical */
-@media (min-width: 481px) and (max-width: 1024px) and (orientation: portrait) {
-  .modal-content {
-    max-height: 95vh;
-  }
-}
-
 @keyframes slideUp {
   from {
     transform: translateY(50px);

@@ -196,13 +196,6 @@
   border-radius: 8px;
 }
 
-/* Tablets en orientación vertical - Vista PDF más alta */
-@media (min-width: 481px) and (max-width: 1024px) and (orientation: portrait) {
-  .pdf-viewer {
-    height: 70vh;
-  }
-}
-
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
