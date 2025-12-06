@@ -83,11 +83,18 @@
   background: #f9fafb;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  position: relative;
 }
 
 .archivo-checkbox:hover {
   background: #f3f4f6;
+}
+
+.archivo-checkbox.selected {
+  background: #ede9fe;
+  border: 2px solid #a78bfa;
+  padding: calc(0.75rem - 2px);
 }
 
 .archivo-checkbox input[type="checkbox"] {
@@ -96,7 +103,21 @@
   cursor: pointer;
 }
 
-.archivo-checkbox span {
+.orden-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.archivo-checkbox span:not(.orden-badge) {
   flex: 1;
   color: #111827;
   font-size: 0.95rem;

@@ -99,10 +99,8 @@ export const obtenerArchivosCliente = async (clienteId: string): Promise<Archivo
       archivos.push(value);
     }
   });
-  return archivos.sort((a, b) => {
-    if (a.año !== b.año) return b.año - a.año;
-    return b.mes - a.mes;
-  });
+  // Ordenar por fecha de subida (más reciente primero)
+  return archivos.sort((a, b) => new Date(b.fechaSubida).getTime() - new Date(a.fechaSubida).getTime());
 };
 
 export const obtenerArchivo = async (id: string): Promise<ArchivoPDF | null> => {

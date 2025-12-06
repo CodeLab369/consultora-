@@ -68,7 +68,11 @@ export const Unir = () => {
 
     setCargando(true);
     try {
-      const archivosAUnir = archivos.filter(a => archivosSeleccionados.includes(a.id));
+      // Mantener el orden de selección de los archivos
+      const archivosAUnir = archivosSeleccionados
+        .map(id => archivos.find(a => a.id === id))
+        .filter((a): a is ArchivoPDF => a !== undefined);
+      
       const pdfData = await unirPDFs(archivosAUnir);
       
       const nombreFinal = nombrePDFUnido.trim().endsWith('.pdf')
@@ -148,16 +152,23 @@ export const Unir = () => {
                     Este cliente no tiene archivos
                   </div>
                 ) : (
-                  archivos.map(archivo => (
-                    <label key={archivo.id} className="archivo-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={archivosSeleccionados.includes(archivo.id)}
-                        onChange={() => handleToggleArchivo(archivo.id)}
-                      />
-                      <span>{archivo.nombre}</span>
-                    </label>
-                  ))
+                  archivos.map(archivo => {
+                    const seleccionIndex = archivosSeleccionados.indexOf(archivo.id);
+                    const estaSeleccionado = seleccionIndex !== -1;
+                    return (
+                      <label key={archivo.id} className={`archivo-checkbox ${estaSeleccionado ? 'selected' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={estaSeleccionado}
+                          onChange={() => handleToggleArchivo(archivo.id)}
+                        />
+                        {estaSeleccionado && (
+                          <span className="orden-badge">{seleccionIndex + 1}</span>
+                        )}
+                        <span>{archivo.nombre}</span>
+                      </label>
+                    );
+                  })
                 )}
               </div>
 
