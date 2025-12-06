@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Search, FileText, Eye, Download, Trash2 } from 'lucide-react';
 import type { Cliente, ArchivoPDF, PDFUnido } from '../../types';
+import { MESES } from '../../types';
 import { obtenerClientes, obtenerArchivosCliente, guardarPDFUnido, obtenerPDFsUnidos, eliminarPDFUnido } from '../../services/database';
 import { unirPDFs, descargarPDF, obtenerURLPDF } from '../../services/pdfService';
 import { Modal } from '../common/Modal.tsx';
@@ -15,8 +16,11 @@ export const Unir = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<Cliente | null>(null);
   const [archivos, setArchivos] = useState<ArchivoPDF[]>([]);
+  const [archivosFiltrados, setArchivosFiltrados] = useState<ArchivoPDF[]>([]);
   const [archivosSeleccionados, setArchivosSeleccionados] = useState<string[]>([]);
   const [busqueda, setBusqueda] = useState('');
+  const [filtroAño, setFiltroAño] = useState<number | ''>('');
+  const [filtroMes, setFiltroMes] = useState<number | ''>('');
   const [nombrePDFUnido, setNombrePDFUnido] = useState('');
   const [pdfsUnidos, setPdfsUnidos] = useState<PDFUnido[]>([]);
   const [pdfViewer, setPdfViewer] = useState<PDFUnido | null>(null);
@@ -28,6 +32,10 @@ export const Unir = () => {
     cargarDatos();
   }, []);
 
+  useEffect(() => {
+    aplicarFiltros();
+  }, [archivos, filtroAño, filtroMes]);
+
   const cargarDatos = async () => {
     const clientesData = await obtenerClientes();
     const pdfsData = await obtenerPDFsUnidos();
@@ -35,16 +43,32 @@ export const Unir = () => {
     setPdfsUnidos(pdfsData);
   };
 
-  const clientesFiltrados = clientes.filter(c =>
-    c.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
-    c.nitCurCi.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const aplicarFiltros = () => {
+    let resultado = [...archivos];
+
+    if (filtroAño !== '') {
+      resultado = resultado.filter(a => a.año === filtroAño);
+    }
+
+    if (filtroMes !== '') {
+      resultado = resultado.filter(a => a.mes === filtroMes);
+    }
+
+    setArchivosFiltrados(resultado);
+  };
 
   const handleSeleccionarCliente = async (cliente: Cliente) => {
     setClienteSeleccionado(cliente);
     setArchivosSeleccionados([]);
+    setFiltroAño('');
+    setFiltroMes('');
     const archivosData = await obtenerArchivosCliente(cliente.id);
     setArchivos(archivosData);
+  };
+
+  const handleLimpiarFiltros = () => {
+    setFiltroAño('');
+    setFiltroMes('');
   };
 
   const handleToggleArchivo = (archivoId: string) => {
@@ -70,7 +94,7 @@ export const Unir = () => {
     try {
       // Mantener el orden de selección de los archivos
       const archivosAUnir = archivosSeleccionados
-        .map(id => archivos.find(a => a.id === id))
+        .map(id => archivosFiltrados.find(a => a.id === id))
         .filter((a): a is ArchivoPDF => a !== undefined);
       
       const pdfData = await unirPDFs(archivosAUnir);
@@ -113,6 +137,13 @@ export const Unir = () => {
     setNotificacion({ tipo: 'success', mensaje: 'PDF descargado' });
   };
 
+  const clientesFiltrados = clientes.filter(c =>
+    c.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
+    c.nitCurCi.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const añosUnicos = Array.from(new Set(archivos.map(a => a.año))).sort((a, b) => b - a);
+
   return (
     <div className="unir-section">
       <div className="unir-content">
@@ -146,13 +177,47 @@ export const Unir = () => {
           <h2>Archivos del Cliente</h2>
           {clienteSeleccionado ? (
             <>
+              {archivos.length > 0 && (
+                <div className="filtros-archivos">
+                  <div className="form-field">
+                    <label>Filtrar por Año</label>
+                    <select value={filtroAño} onChange={(e) => setFiltroAño(e.target.value === '' ? '' : Number(e.target.value))}>
+                      <option value="">Todos los años</option>
+                      {añosUnicos.map(año => (
+                        <option key={año} value={año}>{año}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Filtrar por Mes</label>
+                    <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value === '' ? '' : Number(e.target.value))}>
+                      <option value="">Todos los meses</option>
+                      {MESES.map((mes, i) => (
+                        <option key={i} value={i}>{mes}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {(filtroAño !== '' || filtroMes !== '') && (
+                    <button className="btn-limpiar-filtros" onClick={handleLimpiarFiltros}>
+                      Limpiar Filtros
+                    </button>
+                  )}
+                </div>
+              )}
+
               <div className="archivos-seleccion">
                 {archivos.length === 0 ? (
                   <div className="empty-message">
                     Este cliente no tiene archivos
                   </div>
+                ) : archivosFiltrados.length === 0 ? (
+                  <div className="empty-message">
+                    No hay archivos que coincidan con los filtros
+                  </div>
                 ) : (
-                  archivos.map(archivo => {
+                  archivosFiltrados.map(archivo => {
                     const seleccionIndex = archivosSeleccionados.indexOf(archivo.id);
                     const estaSeleccionado = seleccionIndex !== -1;
                     return (

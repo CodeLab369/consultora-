@@ -66,6 +66,63 @@
   color: #6b7280;
 }
 
+.filtros-archivos {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filtros-archivos .form-field {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtros-archivos .form-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filtros-archivos .form-field select {
+  padding: 0.625rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.filtros-archivos .form-field select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-limpiar-filtros {
+  padding: 0.625rem 1rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-limpiar-filtros:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
 .archivos-seleccion {
   display: flex;
   flex-direction: column;
