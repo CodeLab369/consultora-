@@ -18,6 +18,7 @@ export const Comprimir = () => {
   const [año, setAño] = useState(new Date().getFullYear());
   const [mes, setMes] = useState(new Date().getMonth());
   const [modoSeleccion, setModoSeleccion] = useState<'uno' | 'varios' | 'todos'>('uno');
+  const [modoPeriodo, setModoPeriodo] = useState<'mes' | 'gestion'>('mes');
   const [cargando, setCargando] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
@@ -65,23 +66,40 @@ export const Comprimir = () => {
 
     setCargando(true);
     try {
-      const archivosFiltrados = archivos.filter(a =>
-        clientesAComprimir.some(c => c.id === a.clienteId) &&
-        a.año === año &&
-        a.mes === mes
-      );
+      let archivosFiltrados: ArchivoPDF[] = [];
+      
+      if (modoPeriodo === 'mes') {
+        // Comprimir solo un mes específico
+        archivosFiltrados = archivos.filter(a =>
+          clientesAComprimir.some(c => c.id === a.clienteId) &&
+          a.año === año &&
+          a.mes === mes
+        );
+      } else {
+        // Comprimir gestión completa (todo el año)
+        archivosFiltrados = archivos.filter(a =>
+          clientesAComprimir.some(c => c.id === a.clienteId) &&
+          a.año === año
+        );
+      }
 
       if (archivosFiltrados.length === 0) {
         setNotificacion({ 
           tipo: 'warning', 
-          mensaje: 'No hay archivos para el período seleccionado' 
+          mensaje: `No hay archivos para ${modoPeriodo === 'mes' ? 'el período' : 'la gestión'} seleccionado` 
         });
         setCargando(false);
         return;
       }
 
-      const blob = await crearZIP(clientesAComprimir, archivosFiltrados, año, mes);
-      descargarZIP(blob, 'Nestor', mes, año);
+      const blob = await crearZIP(clientesAComprimir, archivosFiltrados, año, mes, modoPeriodo);
+      
+      if (modoPeriodo === 'gestion') {
+        descargarZIP(blob, 'Nestor', null, año);
+      } else {
+        descargarZIP(blob, 'Nestor', mes, año);
+      }
+      
       setNotificacion({ tipo: 'success', mensaje: 'Archivo ZIP creado correctamente' });
     } catch (error) {
       setNotificacion({ tipo: 'error', mensaje: 'Error al crear el archivo ZIP' });
@@ -132,6 +150,27 @@ export const Comprimir = () => {
             </label>
           </div>
 
+          <div className="modo-periodo">
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="periodo"
+                checked={modoPeriodo === 'mes'}
+                onChange={() => setModoPeriodo('mes')}
+              />
+              <span>Un mes específico</span>
+            </label>
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="periodo"
+                checked={modoPeriodo === 'gestion'}
+                onChange={() => setModoPeriodo('gestion')}
+              />
+              <span>Gestión completa (año entero)</span>
+            </label>
+          </div>
+
           <div className="periodo-seleccion">
             <div className="form-field">
               <label>Año</label>
@@ -145,14 +184,16 @@ export const Comprimir = () => {
               />
             </div>
 
-            <div className="form-field">
-              <label>Mes</label>
-              <select value={mes} onChange={(e) => setMes(Number(e.target.value))}>
-                {MESES.map((m, i) => (
-                  <option key={i} value={i}>{m}</option>
-                ))}
-              </select>
-            </div>
+            {modoPeriodo === 'mes' && (
+              <div className="form-field">
+                <label>Mes</label>
+                <select value={mes} onChange={(e) => setMes(Number(e.target.value))}>
+                  {MESES.map((m, i) => (
+                    <option key={i} value={i}>{m}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <button

@@ -33,6 +33,15 @@
   gap: 0.75rem;
 }
 
+.modo-periodo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
 .radio-label {
   display: flex;
   align-items: center;
