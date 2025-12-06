@@ -140,6 +140,26 @@ export const eliminarPDFUnido = async (id: string): Promise<void> => {
   await pdfUnidosStore.removeItem(id);
 };
 
+export const agregarPDFUnidoACliente = async (
+  pdfUnido: PDFUnido, 
+  clienteId: string, 
+  año: number, 
+  mes: number
+): Promise<void> => {
+  // Crear un nuevo archivo PDF a partir del PDF unido
+  const nuevoArchivo: ArchivoPDF = {
+    id: crypto.randomUUID(),
+    clienteId: clienteId,
+    nombre: pdfUnido.nombre,
+    año: año,
+    mes: mes,
+    data: pdfUnido.data,
+    fechaSubida: new Date().toISOString()
+  };
+  
+  await guardarArchivo(nuevoArchivo);
+};
+
 // CREDENCIALES
 export const obtenerCredenciales = async (): Promise<Credenciales> => {
   const cred = await configStore.getItem<Credenciales>('credenciales');

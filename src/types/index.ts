@@ -43,6 +43,9 @@ export interface PDFUnido {
   data: string; // Base64
   fechaCreacion: string;
   clientesIds: string[];
+  clienteId?: string;
+  año?: number;
+  mes?: number;
 }
 
 export interface Credenciales {

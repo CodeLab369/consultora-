@@ -301,11 +301,20 @@
 }
 
 .pdf-acciones button:nth-child(3) {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pdf-acciones button:nth-child(3):hover {
+  background: #fde68a;
+}
+
+.pdf-acciones button:nth-child(4) {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.pdf-acciones button:nth-child(3):hover {
+.pdf-acciones button:nth-child(4):hover {
   background: #fecaca;
 }
 
@@ -323,6 +332,65 @@
 .pdf-viewer iframe {
   border: none;
   border-radius: 8px;
+}
+
+.asignar-pdf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pdf-asignar-nombre {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-cancelar {
+  padding: 0.625rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-confirmar {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirmar:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btn-confirmar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }
 
 @media (max-width: 968px) {

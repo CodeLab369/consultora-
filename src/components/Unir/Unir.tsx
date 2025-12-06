@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, FileText, Eye, Download, Trash2 } from 'lucide-react';
 import type { Cliente, ArchivoPDF, PDFUnido } from '../../types';
 import { MESES } from '../../types';
-import { obtenerClientes, obtenerArchivosCliente, guardarPDFUnido, obtenerPDFsUnidos, eliminarPDFUnido } from '../../services/database';
+import { obtenerClientes, obtenerArchivosCliente, guardarPDFUnido, obtenerPDFsUnidos, eliminarPDFUnido, agregarPDFUnidoACliente } from '../../services/database';
 import { unirPDFs, descargarPDF, obtenerURLPDF } from '../../services/pdfService';
 import { Modal } from '../common/Modal.tsx';
 import { ConfirmDialog } from '../common/ConfirmDialog.tsx';
@@ -25,6 +25,10 @@ export const Unir = () => {
   const [pdfsUnidos, setPdfsUnidos] = useState<PDFUnido[]>([]);
   const [pdfViewer, setPdfViewer] = useState<PDFUnido | null>(null);
   const [pdfEliminar, setPdfEliminar] = useState<PDFUnido | null>(null);
+  const [pdfParaAsignar, setPdfParaAsignar] = useState<PDFUnido | null>(null);
+  const [clienteDestino, setClienteDestino] = useState<string>('');
+  const [añoDestino, setAñoDestino] = useState<number>(new Date().getFullYear());
+  const [mesDestino, setMesDestino] = useState<number>(new Date().getMonth());
   const [cargando, setCargando] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
@@ -135,6 +139,25 @@ export const Unir = () => {
   const handleDescargarPDF = (pdf: PDFUnido) => {
     descargarPDF(pdf.data, pdf.nombre);
     setNotificacion({ tipo: 'success', mensaje: 'PDF descargado' });
+  };
+
+  const handleAsignarPDFACliente = async () => {
+    if (!pdfParaAsignar || !clienteDestino) {
+      setNotificacion({ tipo: 'error', mensaje: 'Seleccione un cliente de destino' });
+      return;
+    }
+
+    setCargando(true);
+    try {
+      await agregarPDFUnidoACliente(pdfParaAsignar, clienteDestino, añoDestino, mesDestino);
+      setNotificacion({ tipo: 'success', mensaje: 'PDF agregado al cliente correctamente' });
+      setPdfParaAsignar(null);
+      setClienteDestino('');
+    } catch (error) {
+      setNotificacion({ tipo: 'error', mensaje: 'Error al agregar el PDF al cliente' });
+    } finally {
+      setCargando(false);
+    }
   };
 
   const clientesFiltrados = clientes.filter(c =>
@@ -294,6 +317,9 @@ export const Unir = () => {
                   <button onClick={() => handleDescargarPDF(pdf)} title="Descargar">
                     <Download size={18} />
                   </button>
+                  <button onClick={() => setPdfParaAsignar(pdf)} title="Asignar a cliente">
+                    <FileText size={18} />
+                  </button>
                   <button onClick={() => setPdfEliminar(pdf)} title="Eliminar">
                     <Trash2 size={18} />
                   </button>
@@ -331,6 +357,83 @@ export const Unir = () => {
         confirmText="Eliminar"
         type="danger"
       />
+
+      {pdfParaAsignar && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            setPdfParaAsignar(null);
+            setClienteDestino('');
+          }}
+          title="Asignar PDF a Cliente"
+          size="medium"
+        >
+          <div className="asignar-pdf-form">
+            <p className="pdf-asignar-nombre">
+              <strong>PDF:</strong> {pdfParaAsignar.nombre}
+            </p>
+            
+            <div className="form-field">
+              <label>Cliente de destino</label>
+              <select
+                value={clienteDestino}
+                onChange={(e) => setClienteDestino(e.target.value)}
+              >
+                <option value="">Seleccione un cliente</option>
+                {clientes.map(cliente => (
+                  <option key={cliente.id} value={cliente.id}>
+                    {cliente.razonSocial}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>Año</label>
+              <input
+                type="number"
+                value={añoDestino}
+                onChange={(e) => setAñoDestino(Number(e.target.value))}
+                min="2000"
+                max="2100"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>Mes</label>
+              <select
+                value={mesDestino}
+                onChange={(e) => setMesDestino(Number(e.target.value))}
+              >
+                {MESES.map((mes, index) => (
+                  <option key={index} value={index}>
+                    {mes}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="modal-buttons">
+              <button
+                className="btn-cancelar"
+                onClick={() => {
+                  setPdfParaAsignar(null);
+                  setClienteDestino('');
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn-confirmar"
+                onClick={handleAsignarPDFACliente}
+                disabled={!clienteDestino || cargando}
+              >
+                {cargando ? 'Asignando...' : 'Asignar'}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {notificacion && (
         <Notification
