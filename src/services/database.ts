@@ -187,6 +187,7 @@ export const crearBackup = async (): Promise<string> => {
   const pdfsUnidos = await obtenerPDFsUnidos();
   const credenciales = await obtenerCredenciales();
   const opciones = await obtenerOpciones();
+  const etiquetas = await obtenerEtiquetas();
   
   const notas: Nota[] = [];
   await notasStore.iterate<Nota, void>((value) => {
@@ -201,7 +202,8 @@ export const crearBackup = async (): Promise<string> => {
     archivos,
     pdfsUnidos,
     credenciales,
-    opciones
+    opciones,
+    etiquetas
   };
 
   return JSON.stringify(backup);
@@ -215,6 +217,7 @@ export const restaurarBackup = async (backupJson: string): Promise<void> => {
   await notasStore.clear();
   await archivosStore.clear();
   await pdfUnidosStore.clear();
+  await etiquetasStore.clear();
 
   // Restaurar datos
   for (const cliente of backup.clientes) {
@@ -232,6 +235,13 @@ export const restaurarBackup = async (backupJson: string): Promise<void> => {
   
   await actualizarCredenciales(backup.credenciales);
   await actualizarOpciones(backup.opciones);
+  
+  // Restaurar etiquetas si existen en el backup
+  if (backup.etiquetas) {
+    for (const etiqueta of backup.etiquetas) {
+      await guardarEtiqueta(etiqueta);
+    }
+  }
 };
 
 // ETIQUETAS
