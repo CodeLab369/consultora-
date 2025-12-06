@@ -90,11 +90,6 @@ export const Comprimir = () => {
     }
   };
 
-  const añosDisponibles = Array.from(
-    { length: 10 },
-    (_, i) => new Date().getFullYear() - 5 + i
-  );
-
   return (
     <div className="comprimir-section">
       <div className="comprimir-content">
@@ -140,11 +135,14 @@ export const Comprimir = () => {
           <div className="periodo-seleccion">
             <div className="form-field">
               <label>Año</label>
-              <select value={año} onChange={(e) => setAño(Number(e.target.value))}>
-                {añosDisponibles.map(a => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
-              </select>
+              <input
+                type="number"
+                value={año}
+                onChange={(e) => setAño(Number(e.target.value))}
+                min="2000"
+                max="2100"
+                placeholder="Ej: 2024"
+              />
             </div>
 
             <div className="form-field">
