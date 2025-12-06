@@ -17,8 +17,9 @@ export const Comprimir = () => {
   const [clientesSeleccionados, setClientesSeleccionados] = useState<string[]>([]);
   const [año, setAño] = useState(new Date().getFullYear());
   const [mes, setMes] = useState(new Date().getMonth());
+  const [mesesSeleccionados, setMesesSeleccionados] = useState<number[]>([]);
   const [modoSeleccion, setModoSeleccion] = useState<'uno' | 'varios' | 'todos'>('uno');
-  const [modoPeriodo, setModoPeriodo] = useState<'mes' | 'gestion'>('mes');
+  const [modoPeriodo, setModoPeriodo] = useState<'mes' | 'meses' | 'gestion'>('mes');
   const [cargando, setCargando] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
@@ -64,6 +65,11 @@ export const Comprimir = () => {
       return;
     }
 
+    if (modoPeriodo === 'meses' && mesesSeleccionados.length === 0) {
+      setNotificacion({ tipo: 'error', mensaje: 'Seleccione al menos un mes' });
+      return;
+    }
+
     setCargando(true);
     try {
       let archivosFiltrados: ArchivoPDF[] = [];
@@ -74,6 +80,13 @@ export const Comprimir = () => {
           clientesAComprimir.some(c => c.id === a.clienteId) &&
           a.año === año &&
           a.mes === mes
+        );
+      } else if (modoPeriodo === 'meses') {
+        // Comprimir meses seleccionados
+        archivosFiltrados = archivos.filter(a =>
+          clientesAComprimir.some(c => c.id === a.clienteId) &&
+          a.año === año &&
+          mesesSeleccionados.includes(a.mes)
         );
       } else {
         // Comprimir gestión completa (todo el año)
@@ -86,16 +99,18 @@ export const Comprimir = () => {
       if (archivosFiltrados.length === 0) {
         setNotificacion({ 
           tipo: 'warning', 
-          mensaje: `No hay archivos para ${modoPeriodo === 'mes' ? 'el período' : 'la gestión'} seleccionado` 
+          mensaje: `No hay archivos para ${modoPeriodo === 'mes' ? 'el período' : modoPeriodo === 'meses' ? 'los meses' : 'la gestión'} seleccionado` 
         });
         setCargando(false);
         return;
       }
 
-      const blob = await crearZIP(clientesAComprimir, archivosFiltrados, año, mes, modoPeriodo);
+      const blob = await crearZIP(clientesAComprimir, archivosFiltrados, año, mes, modoPeriodo, mesesSeleccionados);
       
       if (modoPeriodo === 'gestion') {
         descargarZIP(blob, 'Nestor', null, año);
+      } else if (modoPeriodo === 'meses') {
+        descargarZIP(blob, 'Nestor', null, año, mesesSeleccionados);
       } else {
         descargarZIP(blob, 'Nestor', mes, año);
       }
@@ -156,7 +171,10 @@ export const Comprimir = () => {
                 type="radio"
                 name="periodo"
                 checked={modoPeriodo === 'mes'}
-                onChange={() => setModoPeriodo('mes')}
+                onChange={() => {
+                  setModoPeriodo('mes');
+                  setMesesSeleccionados([]);
+                }}
               />
               <span>Un mes específico</span>
             </label>
@@ -164,8 +182,23 @@ export const Comprimir = () => {
               <input
                 type="radio"
                 name="periodo"
+                checked={modoPeriodo === 'meses'}
+                onChange={() => {
+                  setModoPeriodo('meses');
+                  setMesesSeleccionados([]);
+                }}
+              />
+              <span>Meses específicos (selección múltiple)</span>
+            </label>
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="periodo"
                 checked={modoPeriodo === 'gestion'}
-                onChange={() => setModoPeriodo('gestion')}
+                onChange={() => {
+                  setModoPeriodo('gestion');
+                  setMesesSeleccionados([]);
+                }}
               />
               <span>Gestión completa (año entero)</span>
             </label>
@@ -192,6 +225,30 @@ export const Comprimir = () => {
                     <option key={i} value={i}>{m}</option>
                   ))}
                 </select>
+              </div>
+            )}
+
+            {modoPeriodo === 'meses' && (
+              <div className="form-field">
+                <label>Seleccionar meses</label>
+                <div className="meses-grid">
+                  {MESES.map((mes, index) => (
+                    <label key={index} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={mesesSeleccionados.includes(index)}
+                        onChange={() => {
+                          if (mesesSeleccionados.includes(index)) {
+                            setMesesSeleccionados(mesesSeleccionados.filter(m => m !== index));
+                          } else {
+                            setMesesSeleccionados([...mesesSeleccionados, index].sort((a, b) => a - b));
+                          }
+                        }}
+                      />
+                      <span>{mes}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             )}
           </div>

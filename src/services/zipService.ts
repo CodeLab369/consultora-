@@ -9,7 +9,8 @@ export const crearZIP = async (
   archivos: ArchivoPDF[],
   año: number,
   mes: number,
-  modoPeriodo: 'mes' | 'gestion' = 'mes'
+  modoPeriodo: 'mes' | 'meses' | 'gestion' = 'mes',
+  mesesSeleccionados?: number[]
 ): Promise<Blob> => {
   const zip = new JSZip();
 
@@ -21,6 +22,11 @@ export const crearZIP = async (
       archivosCliente = archivos.filter(
         a => a.clienteId === cliente.id && a.año === año
       );
+    } else if (modoPeriodo === 'meses') {
+      // Comprimir solo los meses seleccionados
+      archivosCliente = archivos.filter(
+        a => a.clienteId === cliente.id && a.año === año && mesesSeleccionados?.includes(a.mes)
+      );
     } else {
       // Comprimir solo el mes específico
       archivosCliente = archivos.filter(
@@ -31,7 +37,7 @@ export const crearZIP = async (
     if (archivosCliente.length > 0) {
       const carpetaCliente = zip.folder(cliente.razonSocial);
       
-      if (modoPeriodo === 'gestion') {
+      if (modoPeriodo === 'gestion' || modoPeriodo === 'meses') {
         // Organizar por meses dentro de cada cliente
         const archivosPorMes = archivosCliente.reduce((acc, archivo) => {
           if (!acc[archivo.mes]) {
@@ -74,13 +80,25 @@ export const crearZIP = async (
   return await zip.generateAsync({ type: 'blob' });
 };
 
-export const descargarZIP = (blob: Blob, nombreUsuario: string, mes: number | null, año: number): void => {
+export const descargarZIP = (
+  blob: Blob, 
+  nombreUsuario: string, 
+  mes: number | null, 
+  año: number, 
+  mesesSeleccionados?: number[]
+): void => {
   let nombreArchivo: string;
   
-  if (mes === null) {
+  if (mes === null && !mesesSeleccionados) {
+    // Gestión completa
     nombreArchivo = `Clientes_${nombreUsuario}_Gestion_${año}.zip`;
+  } else if (mesesSeleccionados && mesesSeleccionados.length > 0) {
+    // Meses específicos seleccionados
+    const nombresMeses = mesesSeleccionados.map(m => MESES[m]).join('_');
+    nombreArchivo = `Clientes_${nombreUsuario}_${nombresMeses}_${año}.zip`;
   } else {
-    const nombreMes = MESES[mes];
+    // Un solo mes
+    const nombreMes = MESES[mes!];
     nombreArchivo = `Clientes_${nombreUsuario}_${nombreMes}_${año}.zip`;
   }
   
