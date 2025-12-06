@@ -88,6 +88,40 @@
   padding-top: 0.5rem;
 }
 
+.filtros-archivos {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filtros-archivos .form-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.btn-limpiar-filtros {
+  padding: 0.625rem 1rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-limpiar-filtros:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
 .archivos-lista {
   min-height: 200px;
 }

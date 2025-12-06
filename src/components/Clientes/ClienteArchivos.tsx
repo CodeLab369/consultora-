@@ -19,6 +19,9 @@ interface ClienteArchivosProps {
 
 export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => {
   const [archivos, setArchivos] = useState<ArchivoPDF[]>([]);
+  const [archivosFiltrados, setArchivosFiltrados] = useState<ArchivoPDF[]>([]);
+  const [filtroAño, setFiltroAño] = useState<number | ''>('');
+  const [filtroMes, setFiltroMes] = useState<number | ''>('');
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nombreArchivo, setNombreArchivo] = useState('');
   const [año, setAño] = useState(new Date().getFullYear());
@@ -32,9 +35,32 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
     cargarArchivos();
   }, [cliente.id]);
 
+  useEffect(() => {
+    aplicarFiltros();
+  }, [archivos, filtroAño, filtroMes]);
+
   const cargarArchivos = async () => {
     const archivosData = await obtenerArchivosCliente(cliente.id);
     setArchivos(archivosData);
+  };
+
+  const aplicarFiltros = () => {
+    let resultado = [...archivos];
+
+    if (filtroAño !== '') {
+      resultado = resultado.filter(a => a.año === filtroAño);
+    }
+
+    if (filtroMes !== '') {
+      resultado = resultado.filter(a => a.mes === filtroMes);
+    }
+
+    setArchivosFiltrados(resultado);
+  };
+
+  const handleLimpiarFiltros = () => {
+    setFiltroAño('');
+    setFiltroMes('');
   };
 
   const handleNuevoArchivo = () => {
@@ -110,6 +136,8 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
     descargarPDF(archivo.data, archivo.nombre);
     setNotificacion({ tipo: 'success', mensaje: 'Archivo descargado' });
   };
+
+  const añosUnicos = Array.from(new Set(archivos.map(a => a.año))).sort((a, b) => b - a);
 
   return (
     <>
@@ -189,14 +217,48 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
             </div>
           )}
 
+          {archivos.length > 0 && (
+            <div className="filtros-archivos">
+              <div className="form-field">
+                <label>Filtrar por Año</label>
+                <select value={filtroAño} onChange={(e) => setFiltroAño(e.target.value === '' ? '' : Number(e.target.value))}>
+                  <option value="">Todos los años</option>
+                  {añosUnicos.map(año => (
+                    <option key={año} value={año}>{año}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label>Filtrar por Mes</label>
+                <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value === '' ? '' : Number(e.target.value))}>
+                  <option value="">Todos los meses</option>
+                  {MESES.map((mes, i) => (
+                    <option key={i} value={i}>{mes}</option>
+                  ))}
+                </select>
+              </div>
+
+              {(filtroAño !== '' || filtroMes !== '') && (
+                <button className="btn-limpiar-filtros" onClick={handleLimpiarFiltros}>
+                  Limpiar Filtros
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="archivos-lista">
             {archivos.length === 0 ? (
               <div className="archivos-vacio">
                 <p>No hay archivos para este cliente</p>
               </div>
+            ) : archivosFiltrados.length === 0 ? (
+              <div className="archivos-vacio">
+                <p>No hay archivos que coincidan con los filtros</p>
+              </div>
             ) : (
               <div className="archivos-grid">
-                {archivos.map(archivo => (
+                {archivosFiltrados.map(archivo => (
                   <div key={archivo.id} className="archivo-card">
                     <div className="archivo-info">
                       <div className="archivo-nombre">{archivo.nombre}</div>
