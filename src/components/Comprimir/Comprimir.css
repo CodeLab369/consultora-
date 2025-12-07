@@ -69,6 +69,38 @@
   font-weight: 500;
 }
 
+.filtro-encargado-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.filtro-encargado-section label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.select-encargado {
+  padding: 0.625rem 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select-encargado:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
 .periodo-seleccion {
   display: grid;
   grid-template-columns: 1fr 1fr;

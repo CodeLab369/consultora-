@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, FolderArchive } from 'lucide-react';
 import type { Cliente, ArchivoPDF } from '../../types';
 import { MESES } from '../../types';
-import { obtenerClientes, obtenerTodosArchivos } from '../../services/database';
+import { obtenerClientes, obtenerTodosArchivos, obtenerOpciones } from '../../services/database';
 import { crearZIP, descargarZIP } from '../../services/zipService';
 import { Notification } from '../common/Notification.tsx';
 import type { NotificationType } from '../common/Notification';
@@ -13,6 +13,7 @@ import './Comprimir.css';
 export const Comprimir = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [archivos, setArchivos] = useState<ArchivoPDF[]>([]);
+  const [encargados, setEncargados] = useState<string[]>([]);
   const [busqueda, setBusqueda] = useState('');
   const [clientesSeleccionados, setClientesSeleccionados] = useState<string[]>([]);
   const [año, setAño] = useState(new Date().getFullYear());
@@ -20,6 +21,7 @@ export const Comprimir = () => {
   const [mesesSeleccionados, setMesesSeleccionados] = useState<number[]>([]);
   const [modoSeleccion, setModoSeleccion] = useState<'uno' | 'varios' | 'todos'>('uno');
   const [modoPeriodo, setModoPeriodo] = useState<'mes' | 'meses' | 'gestion'>('mes');
+  const [filtroEncargado, setFiltroEncargado] = useState<string>('');
   const [cargando, setCargando] = useState(false);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
@@ -30,14 +32,22 @@ export const Comprimir = () => {
   const cargarDatos = async () => {
     const clientesData = await obtenerClientes();
     const archivosData = await obtenerTodosArchivos();
+    const opciones = await obtenerOpciones();
     setClientes(clientesData);
     setArchivos(archivosData);
+    setEncargados(opciones.encargado);
   };
 
-  const clientesFiltrados = clientes.filter(c =>
-    c.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
-    c.nitCurCi.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const clientesFiltrados = clientes.filter(c => {
+    const cumpleBusqueda = c.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
+      c.nitCurCi.toLowerCase().includes(busqueda.toLowerCase());
+    
+    const cumpleEncargado = filtroEncargado === '' || 
+      filtroEncargado === 'todos' || 
+      c.encargado === filtroEncargado;
+    
+    return cumpleBusqueda && cumpleEncargado;
+  });
 
   const handleToggleCliente = (clienteId: string) => {
     if (modoSeleccion === 'uno') {
@@ -55,7 +65,12 @@ export const Comprimir = () => {
     let clientesAComprimir: Cliente[] = [];
 
     if (modoSeleccion === 'todos') {
-      clientesAComprimir = clientes;
+      // Si hay filtro de encargado, aplicar el filtro
+      if (filtroEncargado && filtroEncargado !== 'todos') {
+        clientesAComprimir = clientes.filter(c => c.encargado === filtroEncargado);
+      } else {
+        clientesAComprimir = clientes;
+      }
     } else {
       clientesAComprimir = clientes.filter(c => clientesSeleccionados.includes(c.id));
     }
@@ -164,6 +179,25 @@ export const Comprimir = () => {
               <span>Todos los clientes</span>
             </label>
           </div>
+
+          {modoSeleccion === 'todos' && (
+            <div className="filtro-encargado-section">
+              <label>Filtrar por encargado</label>
+              <select
+                value={filtroEncargado}
+                onChange={(e) => setFiltroEncargado(e.target.value)}
+                className="select-encargado"
+              >
+                <option value="">Todos los encargados</option>
+                <option value="todos">Todos los encargados</option>
+                {encargados.map((encargado, index) => (
+                  <option key={index} value={encargado}>
+                    {encargado}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="modo-periodo">
             <label className="radio-label">
