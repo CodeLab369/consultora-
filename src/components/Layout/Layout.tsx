@@ -1,6 +1,6 @@
 // Layout principal de la aplicación
 
-import { Users, FileText, FolderArchive, Settings, LogOut, Home, Moon, Sun } from 'lucide-react';
+import { Users, FileText, FolderArchive, Settings, LogOut, Home } from 'lucide-react';
 import type { Seccion } from '../../types';
 import './Layout.css';
 
@@ -10,11 +10,9 @@ interface LayoutProps {
   onCambiarSeccion: (seccion: Seccion) => void;
   onVolverInicio: () => void;
   onCerrarSesion: () => void;
-  theme: 'light' | 'dark';
-  onToggleTheme: () => void;
 }
 
-export const Layout = ({ children, onCambiarSeccion, onVolverInicio, onCerrarSesion, theme, onToggleTheme }: LayoutProps) => {
+export const Layout = ({ children, onCambiarSeccion, onVolverInicio, onCerrarSesion }: LayoutProps) => {
   const secciones = [
     { 
       id: 'clientes' as Seccion, 
@@ -62,15 +60,10 @@ export const Layout = ({ children, onCambiarSeccion, onVolverInicio, onCerrarSes
               <p>Sistema de Gestión</p>
             </div>
           </div>
-          <div className="header-actions">
-            <button className="btn-theme" onClick={onToggleTheme} title={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}>
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            </button>
-            <button className="btn-logout" onClick={onCerrarSesion}>
-              <LogOut size={20} />
-              <span>Cerrar Sesión</span>
-            </button>
-          </div>
+          <button className="btn-logout" onClick={onCerrarSesion}>
+            <LogOut size={20} />
+            <span>Cerrar Sesión</span>
+          </button>
         </div>
       </header>
 

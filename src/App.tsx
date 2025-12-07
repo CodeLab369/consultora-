@@ -10,17 +10,14 @@ import { Ajustes } from './components/Ajustes/Ajustes.tsx';
 import { Notification } from './components/common/Notification.tsx';
 import type { NotificationType } from './components/common/Notification';
 import type { Seccion } from './types';
-import { useTheme } from './hooks/useTheme';
 import { 
   inicializarCredenciales, 
   inicializarOpciones, 
   obtenerCredenciales 
 } from './services/database';
 import './App.css';
-import './styles/dark-theme.css';
 
 function App() {
-  const { theme, toggleTheme } = useTheme();
   const [autenticado, setAutenticado] = useState(false);
   const [seccionActual, setSeccionActual] = useState<Seccion>('clientes');
   const [mostrarDashboard, setMostrarDashboard] = useState(true);
@@ -114,8 +111,6 @@ function App() {
         onCambiarSeccion={handleCambiarSeccion}
         onVolverInicio={handleVolverInicio}
         onCerrarSesion={handleCerrarSesion}
-        theme={theme}
-        onToggleTheme={toggleTheme}
       >
         {renderSeccion()}
       </Layout>
