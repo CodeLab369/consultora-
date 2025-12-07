@@ -8,6 +8,12 @@
 .dark-theme .ajustes-card {
   background: var(--bg-primary);
   box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+
+.dark-theme .comprimir-panel h2,
+.dark-theme .unir-panel h2 {
+  color: var(--text-primary);
 }
 
 /* Elementos de formulario */
@@ -37,6 +43,11 @@
 .dark-theme .archivo-checkbox {
   background: var(--bg-secondary);
   border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .radio-label span,
+.dark-theme .checkbox-label span {
   color: var(--text-primary);
 }
 
@@ -70,7 +81,7 @@
 
 /* Modales */
 .dark-theme .modal-overlay {
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.85);
 }
 
 .dark-theme .modal-content {
@@ -82,6 +93,7 @@
   border-color: var(--border-primary);
 }
 
+.dark-theme .modal-header h2,
 .dark-theme .modal-header h3 {
   color: var(--text-primary);
 }
@@ -92,6 +104,12 @@
 
 .dark-theme .modal-close:hover {
   background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.dark-theme .modal-body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Botones secundarios */
@@ -183,6 +201,42 @@
   color: var(--text-primary);
 }
 
+.dark-theme .opcion-item span {
+  color: var(--text-primary);
+}
+
+.dark-theme .opcion-item input {
+  background: var(--bg-primary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .opciones-grupo {
+  border-color: var(--border-primary);
+}
+
+.dark-theme .opciones-header h3 {
+  color: var(--text-primary);
+}
+
+/* Lista de clientes en Comprimir */
+.dark-theme .clientes-lista {
+  background: transparent;
+}
+
+.dark-theme .cliente-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+.dark-theme .cliente-info .cliente-nombre {
+  color: var(--text-primary);
+}
+
+.dark-theme .cliente-detalles span {
+  color: var(--text-secondary);
+}
+
 /* Contenedor de asignar PDF */
 .dark-theme .asignar-pdf-form,
 .dark-theme .pdf-asignar-nombre {
@@ -197,7 +251,48 @@
   border-color: var(--accent-primary);
 }
 
-/* Período selección */
+/* Lista de clientes en sección principal */
+.dark-theme .clientes-grid {
+  background: transparent;
+}
+
+.dark-theme .cliente-card {
+  background: var(--bg-primary);
+  border-color: var(--border-primary);
+}
+
+.dark-theme .cliente-header h3 {
+  color: var(--text-primary);
+}
+
+.dark-theme .cliente-info-item {
+  color: var(--text-secondary);
+}
+
+.dark-theme .cliente-info-item strong {
+  color: var(--text-primary);
+}
+
+/* Inputs de credenciales en Ajustes con fondo oscuro */
+.dark-theme .ajustes-section input[type="text"],
+.dark-theme .ajustes-section input[type="password"] {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+/* Selector de clientes en modo oscuro */
+.dark-theme .cliente-checkbox input,
+.dark-theme .archivo-checkbox input {
+  accent-color: var(--accent-primary);
+}
+
+/* Mejora de contraste para labels de encargado */
+.dark-theme .filtro-encargado-section label {
+  color: var(--text-primary);
+}
+
+/* Periodo selección */
 .dark-theme .periodo-seleccion {
   background: transparent;
 }
@@ -235,4 +330,48 @@
 /* Info adicional */
 .dark-theme .info-text {
   color: var(--text-secondary);
+}
+
+/* Cliente detalles modal específico */
+.dark-theme .cliente-detalle-form .form-field label {
+  color: var(--text-secondary);
+}
+
+.dark-theme .cliente-detalle-form input[readonly] {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+/* Tabs de navegación */
+.dark-theme .cliente-tabs {
+  border-color: var(--border-primary);
+}
+
+.dark-theme .cliente-tabs button {
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.dark-theme .cliente-tabs button.active {
+  color: var(--accent-primary);
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+}
+
+.dark-theme .cliente-tabs button:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Botones de copiar */
+.dark-theme button[title*="Copiar"] {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme button[title*="Copiar"]:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
 }
