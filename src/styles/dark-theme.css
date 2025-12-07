@@ -1,0 +1,238 @@
+/* Dark Theme Overrides - Estilos globales para modo oscuro */
+
+/* Paneles y contenedores principales */
+.dark-theme .comprimir-panel,
+.dark-theme .unir-panel,
+.dark-theme .cliente-card,
+.dark-theme .pdf-card,
+.dark-theme .ajustes-card {
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Elementos de formulario */
+.dark-theme .form-field input,
+.dark-theme .form-field select,
+.dark-theme .form-field textarea,
+.dark-theme .search-box,
+.dark-theme select,
+.dark-theme input[type="text"],
+.dark-theme input[type="number"],
+.dark-theme input[type="password"],
+.dark-theme input[type="email"] {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .form-field input::placeholder,
+.dark-theme .search-box input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Labels y checkbox/radio buttons */
+.dark-theme .radio-label,
+.dark-theme .checkbox-label,
+.dark-theme .cliente-checkbox,
+.dark-theme .archivo-checkbox {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .radio-label:hover,
+.dark-theme .checkbox-label:hover,
+.dark-theme .cliente-checkbox:hover,
+.dark-theme .archivo-checkbox:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+}
+
+/* Textos */
+.dark-theme .cliente-nombre,
+.dark-theme .pdf-nombre,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4 {
+  color: var(--text-primary);
+}
+
+.dark-theme .cliente-nit,
+.dark-theme .pdf-fecha,
+.dark-theme .form-field label {
+  color: var(--text-secondary);
+}
+
+/* Mensajes vacíos */
+.dark-theme .empty-message {
+  color: var(--text-tertiary);
+}
+
+/* Modales */
+.dark-theme .modal-overlay {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.dark-theme .modal-content {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .modal-header {
+  border-color: var(--border-primary);
+}
+
+.dark-theme .modal-header h3 {
+  color: var(--text-primary);
+}
+
+.dark-theme .modal-close {
+  color: var(--text-secondary);
+}
+
+.dark-theme .modal-close:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Botones secundarios */
+.dark-theme .btn-cancelar {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.dark-theme .btn-cancelar:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Tabs y navegación */
+.dark-theme .tabs button {
+  color: var(--text-secondary);
+}
+
+.dark-theme .tabs button.active {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+/* Resumen */
+.dark-theme .resumen-item {
+  background: var(--bg-secondary);
+}
+
+.dark-theme .resumen-item strong {
+  color: var(--text-secondary);
+}
+
+.dark-theme .resumen-item span {
+  color: var(--text-primary);
+}
+
+/* Filtros */
+.dark-theme .filtros-section,
+.dark-theme .filtro-encargado-section {
+  background: var(--bg-secondary);
+}
+
+.dark-theme .select-encargado {
+  background: var(--bg-primary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+/* Etiquetas */
+.dark-theme .etiqueta-badge {
+  opacity: 0.9;
+}
+
+.dark-theme .etiqueta-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+/* Grid de meses */
+.dark-theme .meses-grid .checkbox-label {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+/* Notas */
+.dark-theme .nota-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+.dark-theme .nota-fecha {
+  color: var(--text-tertiary);
+}
+
+/* Archivos */
+.dark-theme .archivos-grid {
+  background: transparent;
+}
+
+.dark-theme .archivo-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+/* Opciones en Ajustes */
+.dark-theme .opcion-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+/* Contenedor de asignar PDF */
+.dark-theme .asignar-pdf-form,
+.dark-theme .pdf-asignar-nombre {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Clientes lista */
+.dark-theme .clientes-lista .cliente-checkbox.selected,
+.dark-theme .archivos-seleccion .archivo-checkbox.selected {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+}
+
+/* Período selección */
+.dark-theme .periodo-seleccion {
+  background: transparent;
+}
+
+/* Scrollbars para tema oscuro */
+.dark-theme ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark-theme ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--border-secondary);
+  border-radius: 5px;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Ajuste para inputs de color */
+.dark-theme input[type="color"] {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+/* Dividers */
+.dark-theme .divider {
+  border-color: var(--border-primary);
+}
+
+/* Info adicional */
+.dark-theme .info-text {
+  color: var(--text-secondary);
+}
