@@ -312,9 +312,21 @@ export const Comprimir = () => {
 
             <div className="clientes-lista">
               {clientesFiltrados.map(cliente => {
-                const archivosCliente = archivos.filter(
-                  a => a.clienteId === cliente.id && a.año === año && a.mes === mes
-                ).length;
+                let archivosCliente = 0;
+                
+                if (modoPeriodo === 'mes') {
+                  archivosCliente = archivos.filter(
+                    a => a.clienteId === cliente.id && a.año === año && a.mes === mes
+                  ).length;
+                } else if (modoPeriodo === 'meses') {
+                  archivosCliente = archivos.filter(
+                    a => a.clienteId === cliente.id && a.año === año && mesesSeleccionados.includes(a.mes)
+                  ).length;
+                } else {
+                  archivosCliente = archivos.filter(
+                    a => a.clienteId === cliente.id && a.año === año
+                  ).length;
+                }
 
                 return (
                   <label key={cliente.id} className="cliente-checkbox">
@@ -346,16 +358,50 @@ export const Comprimir = () => {
             <div className="resumen-info">
               <div className="resumen-item">
                 <strong>Total de Clientes:</strong>
-                <span>{clientes.length}</span>
+                <span>
+                  {filtroEncargado && filtroEncargado !== 'todos' 
+                    ? clientes.filter(c => c.encargado === filtroEncargado).length 
+                    : clientes.length}
+                </span>
               </div>
               <div className="resumen-item">
                 <strong>Período:</strong>
-                <span>{MESES[mes]} {año}</span>
+                <span>
+                  {modoPeriodo === 'mes' 
+                    ? `${MESES[mes]} ${año}`
+                    : modoPeriodo === 'meses'
+                    ? `${mesesSeleccionados.map(m => MESES[m]).join(', ')} ${año}`
+                    : `Gestión ${año}`}
+                </span>
               </div>
               <div className="resumen-item">
                 <strong>Archivos a comprimir:</strong>
                 <span>
-                  {archivos.filter(a => a.año === año && a.mes === mes).length}
+                  {(() => {
+                    let clientesParaContar = clientes;
+                    if (filtroEncargado && filtroEncargado !== 'todos') {
+                      clientesParaContar = clientes.filter(c => c.encargado === filtroEncargado);
+                    }
+                    
+                    if (modoPeriodo === 'mes') {
+                      return archivos.filter(a => 
+                        clientesParaContar.some(c => c.id === a.clienteId) &&
+                        a.año === año && 
+                        a.mes === mes
+                      ).length;
+                    } else if (modoPeriodo === 'meses') {
+                      return archivos.filter(a => 
+                        clientesParaContar.some(c => c.id === a.clienteId) &&
+                        a.año === año && 
+                        mesesSeleccionados.includes(a.mes)
+                      ).length;
+                    } else {
+                      return archivos.filter(a => 
+                        clientesParaContar.some(c => c.id === a.clienteId) &&
+                        a.año === año
+                      ).length;
+                    }
+                  })()}
                 </span>
               </div>
             </div>
