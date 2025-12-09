@@ -101,6 +101,11 @@ export const Unir = () => {
         .map(id => archivosFiltrados.find(a => a.id === id))
         .filter((a): a is ArchivoPDF => a !== undefined);
       
+      setNotificacion({ 
+        tipo: 'info', 
+        mensaje: `Uniendo ${archivosAUnir.length} archivo${archivosAUnir.length !== 1 ? 's' : ''}...` 
+      });
+      
       const pdfData = await unirPDFs(archivosAUnir);
       
       const nombreFinal = nombrePDFUnido.trim().endsWith('.pdf')
@@ -116,12 +121,17 @@ export const Unir = () => {
       };
 
       await guardarPDFUnido(pdfUnido);
-      setNotificacion({ tipo: 'success', mensaje: 'PDFs unidos correctamente' });
+      setNotificacion({ 
+        tipo: 'success', 
+        mensaje: `${archivosAUnir.length} PDF${archivosAUnir.length !== 1 ? 's' : ''} unido${archivosAUnir.length !== 1 ? 's' : ''} correctamente` 
+      });
       setNombrePDFUnido('');
       setArchivosSeleccionados([]);
       cargarDatos();
     } catch (error) {
-      setNotificacion({ tipo: 'error', mensaje: 'Error al unir los PDFs' });
+      const errorMessage = error instanceof Error ? error.message : 'Error al unir los PDFs';
+      setNotificacion({ tipo: 'error', mensaje: errorMessage });
+      console.error('Error detallado:', error);
     } finally {
       setCargando(false);
     }

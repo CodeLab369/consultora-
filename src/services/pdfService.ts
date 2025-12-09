@@ -18,21 +18,59 @@ export const leerArchivoPDF = (file: File): Promise<string> => {
 };
 
 export const unirPDFs = async (archivos: ArchivoPDF[]): Promise<string> => {
-  const pdfDoc = await PDFDocument.create();
+  try {
+    const pdfDoc = await PDFDocument.create();
 
-  for (const archivo of archivos) {
-    try {
-      const pdfBytes = Uint8Array.from(atob(archivo.data), c => c.charCodeAt(0));
-      const pdf = await PDFDocument.load(pdfBytes);
-      const copiedPages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
-      copiedPages.forEach((page) => pdfDoc.addPage(page));
-    } catch (error) {
-      console.error(`Error al procesar archivo ${archivo.nombre}:`, error);
+    for (const archivo of archivos) {
+      try {
+        // Convertir base64 a bytes de manera más eficiente
+        const binaryString = atob(archivo.data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        // Cargar el PDF con opciones para mayor compatibilidad
+        const pdf = await PDFDocument.load(bytes, { 
+          ignoreEncryption: true,
+          updateMetadata: false 
+        });
+        
+        // Copiar todas las páginas del PDF
+        const pageCount = pdf.getPageCount();
+        const pageIndices = Array.from({ length: pageCount }, (_, i) => i);
+        const copiedPages = await pdfDoc.copyPages(pdf, pageIndices);
+        
+        // Agregar cada página al documento final
+        copiedPages.forEach((page) => {
+          pdfDoc.addPage(page);
+        });
+        
+        console.log(`✓ Procesado: ${archivo.nombre} (${pageCount} página${pageCount !== 1 ? 's' : ''})`);
+      } catch (error) {
+        console.error(`✗ Error al procesar ${archivo.nombre}:`, error);
+        throw new Error(`No se pudo procesar el archivo "${archivo.nombre}". Verifica que sea un PDF válido.`);
+      }
     }
-  }
 
-  const pdfBytes = await pdfDoc.save();
-  return btoa(String.fromCharCode(...pdfBytes));
+    // Guardar el PDF final con optimización
+    const pdfBytes = await pdfDoc.save({ 
+      useObjectStreams: false 
+    });
+    
+    // Convertir a base64 de manera eficiente usando chunks
+    const chunkSize = 0x8000; // 32KB chunks
+    let base64 = '';
+    for (let i = 0; i < pdfBytes.length; i += chunkSize) {
+      const chunk = pdfBytes.slice(i, i + chunkSize);
+      base64 += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    
+    return btoa(base64);
+  } catch (error) {
+    console.error('Error general al unir PDFs:', error);
+    throw error;
+  }
 };
 
 export const descargarPDF = (base64Data: string, nombreArchivo: string): void => {
