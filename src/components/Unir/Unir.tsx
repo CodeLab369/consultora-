@@ -1,6 +1,6 @@
 // Componente de la sección Unir PDFs
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, FileText, Eye, Download, Trash2 } from 'lucide-react';
 import type { Cliente, ArchivoPDF, PDFUnido } from '../../types';
 import { MESES } from '../../types';
@@ -11,6 +11,43 @@ import { ConfirmDialog } from '../common/ConfirmDialog.tsx';
 import { Notification } from '../common/Notification.tsx';
 import type { NotificationType } from '../common/Notification';
 import './Unir.css';
+
+interface PDFViewerModalUnidosProps {
+  pdf: PDFUnido;
+  onClose: () => void;
+}
+
+const PDFViewerModalUnidos = ({ pdf, onClose }: PDFViewerModalUnidosProps) => {
+  const pdfURL = useMemo(() => {
+    return obtenerURLPDF(pdf.data);
+  }, [pdf.data]);
+
+  useEffect(() => {
+    return () => {
+      if (pdfURL) {
+        window.URL.revokeObjectURL(pdfURL);
+      }
+    };
+  }, [pdfURL]);
+
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      title={pdf.nombre}
+      size="xlarge"
+    >
+      <div className="pdf-viewer">
+        <iframe
+          src={pdfURL}
+          title={pdf.nombre}
+          width="100%"
+          height="600px"
+        />
+      </div>
+    </Modal>
+  );
+};
 
 export const Unir = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -341,21 +378,10 @@ export const Unir = () => {
       </div>
 
       {pdfViewer && (
-        <Modal
-          isOpen={true}
+        <PDFViewerModalUnidos
+          pdf={pdfViewer}
           onClose={() => setPdfViewer(null)}
-          title={pdfViewer.nombre}
-          size="xlarge"
-        >
-          <div className="pdf-viewer">
-            <iframe
-              src={obtenerURLPDF(pdfViewer.data)}
-              title={pdfViewer.nombre}
-              width="100%"
-              height="600px"
-            />
-          </div>
-        </Modal>
+        />
       )}
 
       <ConfirmDialog

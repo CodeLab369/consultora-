@@ -1,6 +1,6 @@
 // Componente para gestionar archivos PDF de clientes
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Upload, Eye, Download, Trash2 } from 'lucide-react';
 import type { Cliente, ArchivoPDF } from '../../types';
 import { MESES } from '../../types';
@@ -16,6 +16,43 @@ interface ClienteArchivosProps {
   cliente: Cliente;
   onCerrar: () => void;
 }
+
+interface PDFViewerModalProps {
+  archivo: ArchivoPDF;
+  onClose: () => void;
+}
+
+const PDFViewerModal = ({ archivo, onClose }: PDFViewerModalProps) => {
+  const pdfURL = useMemo(() => {
+    return obtenerURLPDF(archivo.data);
+  }, [archivo.data]);
+
+  useEffect(() => {
+    return () => {
+      if (pdfURL) {
+        window.URL.revokeObjectURL(pdfURL);
+      }
+    };
+  }, [pdfURL]);
+
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      title={archivo.nombre}
+      size="xlarge"
+    >
+      <div className="pdf-viewer">
+        <iframe
+          src={pdfURL}
+          title={archivo.nombre}
+          width="100%"
+          height="600px"
+        />
+      </div>
+    </Modal>
+  );
+};
 
 export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => {
   const [archivos, setArchivos] = useState<ArchivoPDF[]>([]);
@@ -301,21 +338,10 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
       </Modal>
 
       {archivoViewer && (
-        <Modal
-          isOpen={true}
+        <PDFViewerModal
+          archivo={archivoViewer}
           onClose={() => setArchivoViewer(null)}
-          title={archivoViewer.nombre}
-          size="xlarge"
-        >
-          <div className="pdf-viewer">
-            <iframe
-              src={obtenerURLPDF(archivoViewer.data)}
-              title={archivoViewer.nombre}
-              width="100%"
-              height="600px"
-            />
-          </div>
-        </Modal>
+        />
       )}
 
       <ConfirmDialog
