@@ -158,8 +158,8 @@ export const Unir = () => {
         clientesIds: []
       };
 
-      // Mostrar diálogo de confirmación si hay cliente y periodo seleccionados
-      if (clienteSeleccionado && (filtroAño !== '' || filtroMes !== '')) {
+      // Mostrar diálogo de confirmación si hay cliente y periodo completo seleccionados
+      if (clienteSeleccionado && filtroAño !== '' && filtroMes !== '') {
         setPdfRecienUnido({
           pdf: pdfUnido,
           cliente: clienteSeleccionado,
@@ -207,8 +207,16 @@ export const Unir = () => {
     try {
       const { pdf, cliente, año, mes } = pdfRecienUnido;
       
-      if (!cliente || año === '' || mes === '') {
-        setNotificacion({ tipo: 'error', mensaje: 'Datos incompletos para la asignación' });
+      // Validación adicional por seguridad
+      if (!cliente || !cliente.id) {
+        setNotificacion({ tipo: 'error', mensaje: 'Cliente inválido' });
+        setCargando(false);
+        return;
+      }
+
+      if (año === '' || mes === '') {
+        setNotificacion({ tipo: 'error', mensaje: 'Período incompleto' });
+        setCargando(false);
         return;
       }
 
@@ -222,6 +230,7 @@ export const Unir = () => {
       setPdfRecienUnido(null);
       cargarDatos();
     } catch (error) {
+      console.error('Error al asignar PDF:', error);
       setNotificacion({ tipo: 'error', mensaje: 'Error al asignar el PDF' });
     } finally {
       setCargando(false);
