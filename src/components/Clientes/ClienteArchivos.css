@@ -81,6 +81,52 @@
   font-weight: 500;
 }
 
+.archivos-seleccionados {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+
+.contador-archivos {
+  font-size: 0.875rem;
+  color: #059669;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lista-archivos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lista-archivos li {
+  font-size: 0.875rem;
+  color: #374151;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lista-archivos li::before {
+  content: "📄";
+  font-size: 1rem;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

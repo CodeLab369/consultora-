@@ -60,10 +60,9 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
   const [filtroAño, setFiltroAño] = useState<number | ''>('');
   const [filtroMes, setFiltroMes] = useState<number | ''>('');
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [nombreArchivo, setNombreArchivo] = useState('');
   const [año, setAño] = useState(new Date().getFullYear());
   const [mes, setMes] = useState(new Date().getMonth());
-  const [archivoSeleccionado, setArchivoSeleccionado] = useState<File | null>(null);
+  const [archivosSeleccionados, setArchivosSeleccionados] = useState<File[]>([]);
   const [archivoEliminar, setArchivoEliminar] = useState<ArchivoPDF | null>(null);
   const [archivoViewer, setArchivoViewer] = useState<ArchivoPDF | null>(null);
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
@@ -101,58 +100,78 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
   };
 
   const handleNuevoArchivo = () => {
-    setNombreArchivo('');
     setAño(new Date().getFullYear());
     setMes(new Date().getMonth());
-    setArchivoSeleccionado(null);
+    setArchivosSeleccionados([]);
     setMostrarFormulario(true);
   };
 
   const handleSeleccionarArchivo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
-      setArchivoSeleccionado(file);
-      if (!nombreArchivo) {
-        setNombreArchivo(file.name.replace('.pdf', ''));
-      }
-    } else {
-      setNotificacion({ tipo: 'error', mensaje: 'Solo se permiten archivos PDF' });
-    }
-  };
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-  const handleSubirArchivo = async () => {
-    if (!archivoSeleccionado) {
-      setNotificacion({ tipo: 'error', mensaje: 'Seleccione un archivo PDF' });
+    const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+    
+    if (pdfFiles.length === 0) {
+      setNotificacion({ tipo: 'error', mensaje: 'Solo se permiten archivos PDF' });
       return;
     }
 
-    if (!nombreArchivo.trim()) {
-      setNotificacion({ tipo: 'error', mensaje: 'Ingrese un nombre para el archivo' });
+    if (pdfFiles.length !== files.length) {
+      setNotificacion({ tipo: 'warning', mensaje: `Se ignoraron ${files.length - pdfFiles.length} archivo(s) que no son PDF` });
+    }
+
+    setArchivosSeleccionados(pdfFiles);
+  };
+
+  const handleSubirArchivo = async () => {
+    if (archivosSeleccionados.length === 0) {
+      setNotificacion({ tipo: 'error', mensaje: 'Seleccione al menos un archivo PDF' });
       return;
     }
 
     try {
-      const base64Data = await leerArchivoPDF(archivoSeleccionado);
-      const nombreFinal = nombreArchivo.trim().endsWith('.pdf') 
-        ? nombreArchivo.trim() 
-        : `${nombreArchivo.trim()}.pdf`;
+      setNotificacion({ tipo: 'info', mensaje: `Subiendo ${archivosSeleccionados.length} archivo(s)...` });
 
-      const archivo: ArchivoPDF = {
-        id: crypto.randomUUID(),
-        clienteId: cliente.id,
-        nombre: nombreFinal,
-        año,
-        mes,
-        data: base64Data,
-        fechaSubida: new Date().toISOString()
-      };
+      let exitosos = 0;
+      let fallidos = 0;
 
-      await guardarArchivo(archivo);
-      setNotificacion({ tipo: 'success', mensaje: 'Archivo subido correctamente' });
+      for (const file of archivosSeleccionados) {
+        try {
+          const base64Data = await leerArchivoPDF(file);
+          const nombreFinal = file.name.endsWith('.pdf') ? file.name : `${file.name}.pdf`;
+
+          const archivo: ArchivoPDF = {
+            id: crypto.randomUUID(),
+            clienteId: cliente.id,
+            nombre: nombreFinal,
+            año,
+            mes,
+            data: base64Data,
+            fechaSubida: new Date().toISOString()
+          };
+
+          await guardarArchivo(archivo);
+          exitosos++;
+        } catch (error) {
+          console.error(`Error al subir ${file.name}:`, error);
+          fallidos++;
+        }
+      }
+
+      if (fallidos === 0) {
+        setNotificacion({ tipo: 'success', mensaje: `${exitosos} archivo(s) subido(s) correctamente` });
+      } else {
+        setNotificacion({ 
+          tipo: 'warning', 
+          mensaje: `${exitosos} exitoso(s), ${fallidos} fallido(s)` 
+        });
+      }
+
       setMostrarFormulario(false);
       cargarArchivos();
     } catch (error) {
-      setNotificacion({ tipo: 'error', mensaje: 'Error al subir el archivo' });
+      setNotificacion({ tipo: 'error', mensaje: 'Error al subir los archivos' });
     }
   };
 
@@ -220,26 +239,24 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
               </div>
 
               <div className="form-field">
-                <label>Nombre del Archivo</label>
-                <input
-                  type="text"
-                  value={nombreArchivo}
-                  onChange={(e) => setNombreArchivo(e.target.value)}
-                  placeholder="Nombre descriptivo"
-                />
-              </div>
-
-              <div className="form-field">
-                <label>Seleccionar PDF</label>
+                <label>Seleccionar PDF(s)</label>
                 <input
                   type="file"
                   accept="application/pdf"
+                  multiple
                   onChange={handleSeleccionarArchivo}
                 />
-                {archivoSeleccionado && (
-                  <span className="archivo-seleccionado">
-                    Archivo: {archivoSeleccionado.name}
-                  </span>
+                {archivosSeleccionados.length > 0 && (
+                  <div className="archivos-seleccionados">
+                    <span className="contador-archivos">
+                      {archivosSeleccionados.length} archivo(s) seleccionado(s)
+                    </span>
+                    <ul className="lista-archivos">
+                      {archivosSeleccionados.map((file, index) => (
+                        <li key={index}>{file.name}</li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
 
