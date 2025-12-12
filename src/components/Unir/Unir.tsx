@@ -63,6 +63,7 @@ export const Unir = () => {
   const [pdfViewer, setPdfViewer] = useState<PDFUnido | null>(null);
   const [pdfEliminar, setPdfEliminar] = useState<PDFUnido | null>(null);
   const [pdfParaAsignar, setPdfParaAsignar] = useState<PDFUnido | null>(null);
+  const [pdfRecienUnido, setPdfRecienUnido] = useState<{pdf: PDFUnido, cliente: Cliente | null, año: number | '', mes: number | ''} | null>(null);
   const [clienteDestino, setClienteDestino] = useState<string>('');
   const [añoDestino, setAñoDestino] = useState<number>(new Date().getFullYear());
   const [mesDestino, setMesDestino] = useState<number>(new Date().getMonth());
@@ -154,17 +155,33 @@ export const Unir = () => {
         nombre: nombreFinal,
         data: pdfData,
         fechaCreacion: new Date().toISOString(),
-        clientesIds: clienteSeleccionado ? [clienteSeleccionado.id] : []
+        clientesIds: []
       };
 
-      await guardarPDFUnido(pdfUnido);
-      setNotificacion({ 
-        tipo: 'success', 
-        mensaje: `${archivosAUnir.length} PDF${archivosAUnir.length !== 1 ? 's' : ''} unido${archivosAUnir.length !== 1 ? 's' : ''} correctamente` 
-      });
+      // Mostrar diálogo de confirmación si hay cliente y periodo seleccionados
+      if (clienteSeleccionado && (filtroAño !== '' || filtroMes !== '')) {
+        setPdfRecienUnido({
+          pdf: pdfUnido,
+          cliente: clienteSeleccionado,
+          año: filtroAño,
+          mes: filtroMes
+        });
+        setNotificacion({ 
+          tipo: 'success', 
+          mensaje: 'PDF unido correctamente' 
+        });
+      } else {
+        // Si no hay cliente/periodo, guardar directamente en la lista
+        await guardarPDFUnido(pdfUnido);
+        setNotificacion({ 
+          tipo: 'success', 
+          mensaje: `${archivosAUnir.length} PDF${archivosAUnir.length !== 1 ? 's' : ''} unido${archivosAUnir.length !== 1 ? 's' : ''} correctamente` 
+        });
+        cargarDatos();
+      }
+      
       setNombrePDFUnido('');
       setArchivosSeleccionados([]);
-      cargarDatos();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al unir los PDFs';
       setNotificacion({ tipo: 'error', mensaje: errorMessage });
@@ -180,6 +197,55 @@ export const Unir = () => {
       setNotificacion({ tipo: 'success', mensaje: 'PDF eliminado' });
       setPdfEliminar(null);
       cargarDatos();
+    }
+  };
+
+  const handleConfirmarAsignacion = async () => {
+    if (!pdfRecienUnido) return;
+
+    setCargando(true);
+    try {
+      const { pdf, cliente, año, mes } = pdfRecienUnido;
+      
+      if (!cliente || año === '' || mes === '') {
+        setNotificacion({ tipo: 'error', mensaje: 'Datos incompletos para la asignación' });
+        return;
+      }
+
+      // Agregar el PDF directamente al cliente
+      await agregarPDFUnidoACliente(pdf, cliente.id, año, mes);
+      setNotificacion({ 
+        tipo: 'success', 
+        mensaje: `PDF asignado a ${cliente.razonSocial} - ${MESES[mes]} ${año}` 
+      });
+      
+      setPdfRecienUnido(null);
+      cargarDatos();
+    } catch (error) {
+      setNotificacion({ tipo: 'error', mensaje: 'Error al asignar el PDF' });
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleRechazarAsignacion = async () => {
+    if (!pdfRecienUnido) return;
+
+    setCargando(true);
+    try {
+      // Guardar en la lista de PDFs unidos sin asignar a cliente
+      await guardarPDFUnido(pdfRecienUnido.pdf);
+      setNotificacion({ 
+        tipo: 'success', 
+        mensaje: 'PDF guardado en la lista de PDFs unidos' 
+      });
+      
+      setPdfRecienUnido(null);
+      cargarDatos();
+    } catch (error) {
+      setNotificacion({ tipo: 'error', mensaje: 'Error al guardar el PDF' });
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -381,6 +447,19 @@ export const Unir = () => {
         <PDFViewerModalUnidos
           pdf={pdfViewer}
           onClose={() => setPdfViewer(null)}
+        />
+      )}
+
+      {pdfRecienUnido && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Asignar PDF al Cliente"
+          message={`¿Desea asignar el PDF "${pdfRecienUnido.pdf.nombre}" a ${pdfRecienUnido.cliente?.razonSocial}${pdfRecienUnido.año !== '' && pdfRecienUnido.mes !== '' ? ` - ${MESES[pdfRecienUnido.mes]} ${pdfRecienUnido.año}` : ''}?`}
+          onConfirm={handleConfirmarAsignacion}
+          onCancel={handleRechazarAsignacion}
+          confirmText="Sí, asignar al cliente"
+          cancelText="No, guardar en lista"
+          type="info"
         />
       )}
 
