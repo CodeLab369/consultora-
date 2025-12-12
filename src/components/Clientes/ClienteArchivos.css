@@ -248,6 +248,15 @@
   background: #bfdbfe;
 }
 
+.btn-editar-archivo {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.btn-editar-archivo:hover {
+  background: #fde68a;
+}
+
 .btn-descargar-archivo {
   background: #d1fae5;
   color: #065f46;
@@ -264,6 +273,21 @@
 
 .btn-eliminar-archivo:hover {
   background: #fecaca;
+}
+
+.editar-nombre-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.hint-text {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.25rem;
+  display: block;
 }
 
 .pdf-viewer {

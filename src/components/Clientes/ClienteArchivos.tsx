@@ -1,7 +1,7 @@
 // Componente para gestionar archivos PDF de clientes
 
 import { useState, useEffect, useMemo } from 'react';
-import { Upload, Eye, Download, Trash2 } from 'lucide-react';
+import { Upload, Eye, Download, Trash2, Edit } from 'lucide-react';
 import type { Cliente, ArchivoPDF } from '../../types';
 import { MESES } from '../../types';
 import { obtenerArchivosCliente, guardarArchivo, eliminarArchivo } from '../../services/database';
@@ -65,6 +65,8 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
   const [archivosSeleccionados, setArchivosSeleccionados] = useState<File[]>([]);
   const [archivoEliminar, setArchivoEliminar] = useState<ArchivoPDF | null>(null);
   const [archivoViewer, setArchivoViewer] = useState<ArchivoPDF | null>(null);
+  const [archivoEditar, setArchivoEditar] = useState<ArchivoPDF | null>(null);
+  const [nuevoNombre, setNuevoNombre] = useState('');
   const [notificacion, setNotificacion] = useState<{ tipo: NotificationType; mensaje: string } | null>(null);
 
   useEffect(() => {
@@ -181,6 +183,37 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
       setNotificacion({ tipo: 'success', mensaje: 'Archivo eliminado' });
       setArchivoEliminar(null);
       cargarArchivos();
+    }
+  };
+
+  const handleEditarNombre = (archivo: ArchivoPDF) => {
+    setArchivoEditar(archivo);
+    setNuevoNombre(archivo.nombre.replace('.pdf', ''));
+  };
+
+  const handleGuardarNombre = async () => {
+    if (!archivoEditar || !nuevoNombre.trim()) {
+      setNotificacion({ tipo: 'error', mensaje: 'Ingrese un nombre válido' });
+      return;
+    }
+
+    try {
+      const nombreFinal = nuevoNombre.trim().endsWith('.pdf') 
+        ? nuevoNombre.trim() 
+        : `${nuevoNombre.trim()}.pdf`;
+
+      const archivoActualizado: ArchivoPDF = {
+        ...archivoEditar,
+        nombre: nombreFinal
+      };
+
+      await guardarArchivo(archivoActualizado);
+      setNotificacion({ tipo: 'success', mensaje: 'Nombre actualizado correctamente' });
+      setArchivoEditar(null);
+      setNuevoNombre('');
+      cargarArchivos();
+    } catch (error) {
+      setNotificacion({ tipo: 'error', mensaje: 'Error al actualizar el nombre' });
     }
   };
 
@@ -332,6 +365,13 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
                         <Eye size={18} />
                       </button>
                       <button 
+                        className="btn-accion-archivo btn-editar-archivo"
+                        onClick={() => handleEditarNombre(archivo)}
+                        title="Editar nombre"
+                      >
+                        <Edit size={18} />
+                      </button>
+                      <button 
                         className="btn-accion-archivo btn-descargar-archivo"
                         onClick={() => handleDescargar(archivo)}
                         title="Descargar"
@@ -359,6 +399,46 @@ export const ClienteArchivos = ({ cliente, onCerrar }: ClienteArchivosProps) => 
           archivo={archivoViewer}
           onClose={() => setArchivoViewer(null)}
         />
+      )}
+
+      {archivoEditar && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            setArchivoEditar(null);
+            setNuevoNombre('');
+          }}
+          title="Editar Nombre del Archivo"
+          size="small"
+        >
+          <div className="editar-nombre-form">
+            <div className="form-field">
+              <label>Nombre del Archivo</label>
+              <input
+                type="text"
+                value={nuevoNombre}
+                onChange={(e) => setNuevoNombre(e.target.value)}
+                placeholder="Nombre del archivo"
+                autoFocus
+              />
+              <span className="hint-text">Se agregará automáticamente .pdf si es necesario</span>
+            </div>
+            <div className="form-actions">
+              <button 
+                className="btn-cancelar" 
+                onClick={() => {
+                  setArchivoEditar(null);
+                  setNuevoNombre('');
+                }}
+              >
+                Cancelar
+              </button>
+              <button className="btn-guardar" onClick={handleGuardarNombre}>
+                Guardar
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
 
       <ConfirmDialog
